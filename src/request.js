@@ -216,26 +216,34 @@ shortcuts.forEach(function(shortcut) {
 //
 
 request.couch = function(options, callback) {
+  if(typeof options === 'string')
+    options = {'uri':options}
+
   // Just use the request API to do JSON.
   options.json = true
   if(options.body)
     options.json = options.body
   delete options.body
 
-  return request(options, function(er, resp, body) {
+  callback = callback || noop
+
+  var xhr = request(options, couch_handler)
+  return xhr
+
+  function couch_handler(er, resp, body) {
     if(er)
-      return callback && callback(er, resp, body);
+      return callback(er, resp, body)
 
     if((resp.statusCode < 200 || resp.statusCode > 299) && body.error) {
       // The body is a Couch JSON object indicating the error.
       er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
-      er.error = body.error
-
-      return callback && callback(er, resp);
+      for (var key in body)
+        er[key] = body[key]
+      return callback(er, resp, body);
     }
 
-    return callback && callback(er, resp, body);
-  })
+    return callback(er, resp, body);
+  }
 }
 
 //
