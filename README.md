@@ -71,15 +71,7 @@ See the [Node.js Request README][req] for several more examples. Request intends
 
 Browser Request is an [Ender][ender] package. If you don't have Ender, install it, and don't ever look back.
 
-    $ npm install -g ender
-
-To include Request in an Ender build:
-
-    $ ender build request[,mod2, mod3,...]
-
-Or to add it to an existing Ender build:
-
-    $ ender add request
+    $ ender add browser-request
 
 ## RequireJS
 
