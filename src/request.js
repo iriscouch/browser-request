@@ -14,6 +14,6 @@
 
 module.exports = request
 
-function requst() {
+function request() {
   throw new Error('Not implemented')
 }
