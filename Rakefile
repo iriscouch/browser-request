@@ -52,13 +52,15 @@ end
 directory ENDER
 
 desc "Build Ender modules"
-task :ender => [ "#{ENDER}/xmlhttprequest.js", "#{ENDER}/request.js" ] do
+task :ender => [ "#{ENDER}/xmlhttprequest.js", "#{ENDER}/request.js", "#{ENDER}/ender.js" ] do
   puts "Ender build: #{ENDER}"
 end
 
-file "#{ENDER}/request.js" => [ ENDER, REQ_SRC ] do |task|
-  # The source code is already in CommonJS format.
-  cp REQ_SRC, task.name
+%w[ request ender ].each do |module_name|
+  file "#{ENDER}/#{module_name}.js" => [ ENDER, "#{HERE}/src/#{module_name}.js" ] do |task|
+    # The source code is already in CommonJS format.
+    cp REQ_SRC, task.name
+  end
 end
 
 file "#{ENDER}/xmlhttprequest.js" => [ ENDER, COMMONJS_TEMPLATE, XHR_SRC ] do |task|

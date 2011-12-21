@@ -14,5 +14,5 @@
                      }
 
 , "engines": [ "node" ]
-, "ender": "./build/commonjs/request.js"
+, "ender": "./build/ender/ender.js"
 }
