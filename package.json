@@ -1,5 +1,5 @@
 { "name": "browser-request"
-, "version"     : "0.1.0-beta2"
+, "version"     : "0.1.0-beta3"
 , "author"      : { "name": "Jason Smith" , "email": "jhs@iriscouch.com" }
 , "description" : "Browser port of the Node.js 'request' package"
 , "keywords"    : ["request", "http", "browser", "ender"]
