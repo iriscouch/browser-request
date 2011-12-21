@@ -140,7 +140,7 @@ generated code into a tag, then clean up in a subsequent commit.
  2. rake clean && rake
  3. git add -f build/ && git commit -m "Code release"
  4. ver="vX.Y.Z" # Set this to something.
- 5. git tag -a -m "Tag release" "$ver"
+ 5. git tag -a "$ver" -m some_tag_message
  6. git push origin "$ver:/refs/tags/$ver"
  7. npm publish
  8. Edit package.json and bump the version
