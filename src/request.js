@@ -97,7 +97,7 @@ function request(options, callback) {
 }
 
 var req_seq = 0
-function run_xhr(options, callback) {
+function run_xhr(options) {
   var xhr = new XHR
     , timed_out = false
 
@@ -114,47 +114,76 @@ function run_xhr(options, callback) {
     er.duration = options.timeout
 
     LOG.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
-    return callback(er, xhr)
+    return options.callback(er, xhr)
   }
 
-  xhr.open(options.method, options.uri, true) // asynchronous
+  // Some states can be skipped over, so remember what is still incomplete.
+  var did = {'response':false, 'loading':false}
+
   xhr.onreadystatechange = on_state_change
+  xhr.open(options.method, options.uri, true) // asynchronous
   xhr.send(options.body)
+  return xhr
 
   function on_state_change(event) {
     if(timed_out)
-      return LOG.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id, 'event':event})
-    LOG.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out, 'event':event})
+      return LOG.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
+
+    LOG.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
 
     if(xhr.readyState === XHR.OPENED) {
-      LOG.debug('Request opened', {'id':xhr.id})
+      LOG.debug('Request started', {'id':xhr.id})
       for (var key in options.headers)
         xhr.setRequestHeader(key, options.headers[key])
     }
 
-    else if(xhr.readyState === XHR.HEADERS_RECEIVED) {
-      LOG.debug('Got response', {'id':xhr.id, 'status':xhr.status})
-      xhr.statusCode = xhr.status // Node request compatibility
-      return options.onResponse(null, xhr)
-    }
+    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
+      on_response()
 
     else if(xhr.readyState === XHR.LOADING) {
-      LOG.debug('Response body loading', {'id':xhr.id})
-      // TODO: Maybe simulate "data" events by watching xhr.responseText
+      on_response()
+      on_loading()
     }
 
     else if(xhr.readyState === XHR.DONE) {
-      LOG.debug('Request done', {'id':xhr.id})
-
-      xhr.body = xhr.responseText
-      if(options.json) {
-        try        { xhr.body = JSON.parse(xhr.responseText) }
-        catch (er) { return callback(er, xhr)                }
-      }
-
-      return callback(null, xhr, xhr.body)
+      on_response()
+      on_loading()
+      on_end()
     }
   }
+
+  function on_response() {
+    if(did.response)
+      return
+
+    did.response = true
+    LOG.debug('Got response', {'id':xhr.id, 'status':xhr.status})
+    clearTimeout(xhr.timeoutTimer)
+    xhr.statusCode = xhr.status // Node request compatibility
+    options.onResponse(null, xhr)
+  }
+
+  function on_loading() {
+    if(did.loading)
+      return
+
+    did.loading = true
+    LOG.debug('Response body loading', {'id':xhr.id})
+    // TODO: Maybe simulate "data" events by watching xhr.responseText
+  }
+
+  function on_end() {
+    LOG.debug('Request done', {'id':xhr.id})
+
+    xhr.body = xhr.responseText
+    if(options.json) {
+      try        { xhr.body = JSON.parse(xhr.responseText) }
+      catch (er) { return options.callback(er, xhr)        }
+    }
+
+    options.callback(null, xhr, xhr.body)
+  }
+
 } // request
 
 request.withCredentials = false;
