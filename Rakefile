@@ -19,12 +19,14 @@ HERE = File.expand_path(File.dirname __FILE__)
 BUILD        = "#{HERE}/release"
 ENDER        = "#{BUILD}/ender"
 BROWSER      = "#{BUILD}/browser"
+REQUIREJS    = "#{BUILD}/requirejs"
 
 XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 REQ_SRC      = "#{HERE}/src/request.js"
 ENDER_SRC    = "#{HERE}/src/ender.js"
 
 COMMONJS_TEMPLATE = "#{HERE}/template/browser_to_commonjs.js.erb" # Browser code to CommonJS code
+REQUIREJS_TEMPLATE= "#{HERE}/template/commonjs_to_requirejs.js.erb"
 BROWSER_TEMPLATE  = "#{HERE}/template/commonjs_to_browser.js.erb"
 
 task :default => :build
@@ -35,7 +37,7 @@ task :clean do
 end
 
 desc "Build all package types"
-task :build => [:ender, :browser] #, :requirejs]
+task :build => [:ender, :browser, :requirejs]
 
 file XHR_SRC do
   puts "ERROR: Cannot find XMLHttpRequest project (git submodule). Try running this:"
@@ -76,6 +78,33 @@ file "#{ENDER}/xmlhttprequest.js" => [ ENDER, COMMONJS_TEMPLATE, XHR_SRC ] do |t
   target.close
 
   puts "Generated CommonJS-wrapped #{ENDER}/xmlhttprequest.js"
+end
+
+#
+# RequireJS build
+#
+
+directory REQUIREJS
+
+desc "Build RequireJS modules"
+task :requirejs => [ "#{REQUIREJS}/xmlhttprequest.js", "#{REQUIREJS}/request.js" ] do
+  puts "RequireJS build: #{REQUIREJS}"
+end
+
+%w[ xmlhttprequest request ].each do |module_name|
+  file "#{REQUIREJS}/#{module_name}.js" => [ REQUIREJS, "#{ENDER}/#{module_name}.js" ] do
+    # Convert CommonJS format to RequireJS.
+    wrapper = File.new(REQUIREJS_TEMPLATE).read
+    wrapper = ERB.new wrapper
+
+    content = File.new("#{ENDER}/#{module_name}.js").read
+
+    target = File.new "#{REQUIREJS}/#{module_name}.js", 'w'
+    target.write(wrapper.result binding)
+    target.close
+
+    puts "Generated RequireJS #{REQUIREJS}/#{module_name}.js"
+  end
 end
 
 #
