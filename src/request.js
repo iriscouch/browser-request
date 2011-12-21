@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var XHR = require('./xmlhttprequest')
-
-if(!XHR || typeof XHR !== 'function')
+var xmlhttprequest = require('./xmlhttprequest')
+if(!xmlhttprequest || typeof xmlhttprequest !== 'object')
   throw new Error('Could not find ./xmlhttprequest')
+
+var XHR = xmlhttprequest.XMLHttpRequest
 if(XHR.name !== 'cXMLHttpRequest')
   throw new Error('This is not portable XMLHttpRequest')
 

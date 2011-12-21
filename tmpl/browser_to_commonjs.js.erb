@@ -13,7 +13,7 @@
   # limitations under the License.
 %>
 
-!function() {
+!function(window) {
   if(typeof exports === 'undefined')
     throw new Error('Cannot find global "exports" object. Is this really CommonJS?')
   if(typeof module === 'undefined')
@@ -22,18 +22,26 @@
     throw new Error('Cannot find global "module.exports" object. Is this really CommonJS?')
 
   // Define globals to simulate a browser environment.
-  var document = {}
-  var window = { 'document':document }
+  window = window || {}
 
-  var navigator = {}
-  navigator.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.51.22 (KHTML, like Gecko) Version/5.1.1 Safari/534.51.22';
+  var document = window.document || {}
+  if(!window.document)
+    window.document = document
+
+  var navigator = window.navigator || {}
+  if(!window.navigator)
+    window.navigator = navigator
+
+  if(!navigator.userAgent)
+    navigator.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.51.22 (KHTML, like Gecko) Version/5.1.1 Safari/534.51.22';
 
   run_code()
-  module.exports = window
+  //module.exports = window
+  exports.XMLHttpRequest = window.XMLHttpRequest
 
   function run_code() {
     // Begin browser file: <%= module_name %>
 <%= content %>
     // End browser file: <%= module_name %>
   }
-}();
+}(typeof window !== 'undefined' ? window : {});
