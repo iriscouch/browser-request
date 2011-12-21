@@ -144,7 +144,7 @@ generated code into a tag, then clean up in a subsequent commit.
  6. git push origin "$ver:/refs/tags/$ver"
  7. npm publish
  8. Edit package.json and bump the version
- 9. git rm build/
+ 9. git rm -r build/
  10. git commit -m 'Working on <new version>'
 EOT
 end
