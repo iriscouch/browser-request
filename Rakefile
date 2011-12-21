@@ -17,11 +17,12 @@ require 'erb'
 HERE = File.expand_path(File.dirname __FILE__)
 
 BUILD        = "#{HERE}/build"
-COMMONJS     = "#{HERE}/build/commonjs"
+ENDER        = "#{HERE}/build/ender"
 BROWSER      = "#{HERE}/build/browser"
 
 XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 REQ_SRC      = "#{HERE}/src/request.js"
+ENDER_SRC    = "#{HERE}/src/ender.js"
 
 COMMONJS_TEMPLATE = "#{HERE}/template/browser_to_commonjs.js.erb" # Browser code to CommonJS code
 BROWSER_TEMPLATE  = "#{HERE}/template/commonjs_to_browser.js.erb"
@@ -34,7 +35,7 @@ task :clean do
 end
 
 desc "Build all package types"
-task :build => [:commonjs, :browser] #, :requirejs]
+task :build => [:ender, :browser] #, :requirejs]
 
 file XHR_SRC do
   puts "ERROR: Cannot find XMLHttpRequest project (git submodule). Try running this:"
@@ -45,22 +46,22 @@ file XHR_SRC do
 end
 
 #
-# CommonJS build
+# Ender build
 #
 
-directory COMMONJS
+directory ENDER
 
-desc "Build CommonJS modules of Browser Request"
-task :commonjs => [ "#{COMMONJS}/xmlhttprequest.js", "#{COMMONJS}/request.js" ] do
-  puts "CommonJS build: #{COMMONJS}"
+desc "Build Ender modules"
+task :ender => [ "#{ENDER}/xmlhttprequest.js", "#{ENDER}/request.js" ] do
+  puts "Ender build: #{ENDER}"
 end
 
-file "#{COMMONJS}/request.js" => [ COMMONJS, REQ_SRC ] do |task|
+file "#{ENDER}/request.js" => [ ENDER, REQ_SRC ] do |task|
   # The source code is already in CommonJS format.
   cp REQ_SRC, task.name
 end
 
-file "#{COMMONJS}/xmlhttprequest.js" => [ COMMONJS, COMMONJS_TEMPLATE, XHR_SRC ] do |task|
+file "#{ENDER}/xmlhttprequest.js" => [ ENDER, COMMONJS_TEMPLATE, XHR_SRC ] do |task|
   # Convert the "browser" format to CommonJS.
   wrapper = File.new(COMMONJS_TEMPLATE).read
   wrapper = ERB.new wrapper
@@ -72,7 +73,7 @@ file "#{COMMONJS}/xmlhttprequest.js" => [ COMMONJS, COMMONJS_TEMPLATE, XHR_SRC ]
   target.write(wrapper.result binding)
   target.close
 
-  puts "Generated CommonJS-wrapped #{COMMONJS}/xmlhttprequest.js"
+  puts "Generated CommonJS-wrapped #{ENDER}/xmlhttprequest.js"
 end
 
 #
