@@ -20,7 +20,7 @@ BUILD        = "#{HERE}/build"
 COMMONJS     = "#{HERE}/build/commonjs"
 TRADITIONAL  = "#{HERE}/build/browser"
 
-XHR_PLAIN    = "#{HERE}/xmlhttprequest/xmlhttprequest.js"
+XHR_PLAIN    = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 XHR_MAIN     = "#{COMMONJS}/xmlhttprequest.js"
 REQUEST_PLAIN= "#{HERE}/src/request.js"
 REQUEST_MAIN = "#{COMMONJS}/request.js"
