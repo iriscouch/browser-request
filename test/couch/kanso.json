@@ -1,0 +1,10 @@
+{ "name": "browser-request-test"
+, "version": "0.1.0"
+, "description": "A Couch app to test Browser Request"
+, "dependencies": { "attachments": null
+                  }
+
+, "attachments": [ "index.html"
+                 , "../../build/browser/request.js"
+                 ]
+}
