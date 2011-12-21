@@ -29,11 +29,8 @@
     window = {}
   }
 
-  var module_err = null
-  try        { run_module() }
-  catch (er) { module_err = er  }
-
-  window["<%= module_name %>"] = module_err || module.exports
+  run_module()
+  window["<%= module_name %>"] = module.exports
 
   function run_module() {
     // Begin CommonJS file
