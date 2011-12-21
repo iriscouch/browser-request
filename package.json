@@ -14,5 +14,5 @@
                      }
 
 , "engines": [ "node" ]
-, "ender": "./build/ender/ender.js"
+, "ender": "./release/ender/ender.js"
 }

@@ -83,7 +83,7 @@ Or to add it to an existing Ender build:
 
 ## RequireJS
 
-Browser Request also supports [RequireJS][rjs]. Add `build/request.js` and `build/xmlhttprequest.js` to your web application and use it from your code.
+Browser Request also supports [RequireJS][rjs]. Add `release/requirejs/request.js` and `release/requirejs/xmlhttprequest.js` to your web application and use it from your code.
 
 ```javascript
 define(['request'], function(request) {
@@ -93,7 +93,7 @@ define(['request'], function(request) {
 
 ## Traditional
 
-The traditional way is to use it like any other Javascript library. Add `build/browser/request.js` to your web application and use it from your page.
+The traditional way is to use it like any other Javascript library. Add `release/browser/request.js` to your web application and use it from your page.
 
 ```html
 <script src="request-browser.js"></script>
