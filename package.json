@@ -1,0 +1,18 @@
+{ "name": "request-browser"
+, "version"     : "0.1.0"
+, "author"      : { "name": "Jason Smith" , "email": "jhs@iriscouch.com" }
+, "description" : "Browser port of the Node.js 'request' package"
+, "keywords"    : ["request", "http", "browser", "ender"]
+, "homepage"    : "http://github.com/iriscouch/request-browser"
+, "repository"  : { "type": "git"
+                  , "url": "git://github.com/iriscouch/request-browser" }
+
+, "dependencies"   : {
+                     }
+
+, "devDependencies": { "tap": "0.1.3"
+                     }
+
+, "engines": [ "node" ]
+, "ender": "./ender.js"
+}
