@@ -65,6 +65,7 @@ file "#{COMMONJS}/xmlhttprequest.js" => [ COMMONJS, COMMONJS_TEMPLATE, XHR_SRC ]
   wrapper = File.new(COMMONJS_TEMPLATE).read
   wrapper = ERB.new wrapper
 
+  module_name = File.basename XHR_SRC
   content = File.new(XHR_SRC).read
 
   target = File.new task.name, 'w'
