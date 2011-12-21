@@ -25,9 +25,9 @@ XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 REQ_SRC      = "#{HERE}/src/request.js"
 ENDER_SRC    = "#{HERE}/src/ender.js"
 
-COMMONJS_TEMPLATE = "#{HERE}/template/browser_to_commonjs.js.erb" # Browser code to CommonJS code
-REQUIREJS_TEMPLATE= "#{HERE}/template/commonjs_to_requirejs.js.erb"
-BROWSER_TEMPLATE  = "#{HERE}/template/commonjs_to_browser.js.erb"
+COMMONJS_TEMPLATE = "#{HERE}/tmpl/browser_to_commonjs.js.erb" # Browser code to CommonJS code
+REQUIREJS_TEMPLATE= "#{HERE}/tmpl/commonjs_to_requirejs.js.erb"
+BROWSER_TEMPLATE  = "#{HERE}/tmpl/commonjs_to_browser.js.erb"
 
 task :default => :build
 
