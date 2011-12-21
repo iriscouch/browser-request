@@ -18,17 +18,24 @@
     throw new Error('require() unsupported in the traditional build. Use RequireJS or Ender.')
   }
 
-  var exports, module = {}
-  if(typeof window !== 'undefined')
-    exports = module.exports = window
-  else {
-    exports = module.exports = {}
+  var exports = {}
+    , module = { 'exports': exports }
+
+  if(typeof window === 'undefined') {
+    var window = {}
     if(typeof console !== 'undefined' && console && console.error)
       console.error('Cannot find global "window" object. Is this a browser?')
   }
 
-// Begin CommonJS file
-<%= content %>
-// End CommonJS file
+  var module_err = null
+  try        { run_module() }
+  catch (er) { module_err = er  }
 
+  window["<%= module_name %>"] = module_err || module.exports
+
+  function run_module() {
+    // Begin CommonJS file
+<%= content %>
+    // End CommonJS file
+  }
 }();
