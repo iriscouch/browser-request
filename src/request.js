@@ -21,19 +21,28 @@ if(XHR.name !== 'cXMLHttpRequest')
 
 module.exports = request
 
-var DEFAULT_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
+  , LOG = getLogger()
 
 //
 // request
 //
 
 function request(options, callback) {
+  // The entry-point to the API: prep the options object and pass the real work to run_xhr.
+  if(typeof callback !== 'function') {
+    LOG.warn('Bad callback given', {'callback':callback})
+    callback = noop
+  }
+
   var options_onResponse = options.onResponse; // Save this for later.
 
   if(typeof options === 'string')
     options = {'uri':options};
   else
     options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
+
+  options.onResponse = options_onResponse // And put it back.
 
   if(options.url) {
     options.uri = options.url;
@@ -43,104 +52,109 @@ function request(options, callback) {
   if(!options.uri && options.uri !== "")
     throw new Error("options.uri is a required argument");
 
-  if(options.json) {
-    options.body = JSON.stringify(options.json);
-    delete options.json;
-  }
-
   if(typeof options.uri != "string")
     throw new Error("options.uri must be a string");
 
-  ; ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect'].forEach(function(opt) {
-    if(options[opt])
-      throw new Error("options." + opt + " is not supported");
-  })
+  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
+  for (var i = 0; i < unsupported_options.length; i++)
+    if(options[ unsupported_options[i] ])
+      throw new Error("options." + unsupported_options[i] + " is not supported")
 
+  options.callback = callback
   options.method = options.method || 'GET';
   options.headers = options.headers || {};
+  options.body    = options.body || null
+  options.timeout = options.timeout || request.DEFAULT_TIMEOUT
 
   if(options.headers.host)
     throw new Error("Options.headers.host is not supported");
 
-  // onResponse is just like the callback but that is not quite what Node request does.
-  callback = callback || options_onResponse;
+  if(options.json) {
+    options.headers.accept = options.headers.accept || 'application/json'
+    if(options.method !== 'GET')
+      options.headers['content-type'] = 'application/json'
+    if(typeof options.body === 'object')
+      options.body = JSON.stringify(options.body)
+  }
 
-  /*
-  // Browsers do not like this.
-  if(options.body)
-    options.headers['content-length'] = options.body.length;
-  */
+  // If onResponse is boolean true, call back immediately when the response is known,
+  // not when the full request is complete.
+  options.onResponse = options.onResponse || noop
+  if(options.onResponse === true) {
+    options.onResponse = callback
+    options.callback = noop
+  }
 
-  var headers = {};
-  var beforeSend = function(xhr, settings) {
-    if(!options.headers.authorization && options.auth) {
-      debugger
-      options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
+  // XXX Browsers do not like this.
+  //if(options.body)
+  //  options.headers['content-length'] = options.body.length;
+
+  // HTTP basic authentication
+  if(!options.headers.authorization && options.auth)
+    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
+
+  return run_xhr(options)
+}
+
+var req_seq = 0
+function run_xhr(options, callback) {
+  var xhr = new XHR
+    , timed_out = false
+
+  req_seq += 1
+  xhr.seq_id = req_seq
+  xhr.id = req_seq + ': ' + options.method + ' ' + options.uri
+  xhr._id = xhr.id // I know I will type "_id" from habit all the time.
+
+  xhr.timeoutTimer = setTimeout(too_late, options.timeout)
+  function too_late() {
+    timed_out = true
+    var er = new Error('ETIMEDOUT')
+    er.code = 'ETIMEDOUT'
+    er.duration = options.timeout
+
+    LOG.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
+    return callback(er, xhr)
+  }
+
+  xhr.open(options.method, options.uri, true) // asynchronous
+  xhr.onreadystatechange = on_state_change
+  xhr.send(options.body)
+
+  function on_state_change(event) {
+    if(timed_out)
+      return LOG.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id, 'event':event})
+    LOG.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out, 'event':event})
+
+    if(xhr.readyState === XHR.OPENED) {
+      LOG.debug('Request opened', {'id':xhr.id})
+      for (var key in options.headers)
+        xhr.setRequestHeader(key, options.headers[key])
     }
 
-    for (var key in options.headers)
-      xhr.setRequestHeader(key, options.headers[key]);
-  }
+    else if(xhr.readyState === XHR.HEADERS_RECEIVED) {
+      LOG.debug('Got response', {'id':xhr.id, 'status':xhr.status})
+      xhr.statusCode = xhr.status // Node request compatibility
+      return options.onResponse(null, xhr)
+    }
 
-  // Establish a place where the callback arguments will go.
-  var result = [];
+    else if(xhr.readyState === XHR.LOADING) {
+      LOG.debug('Response body loading', {'id':xhr.id})
+      // TODO: Maybe simulate "data" events by watching xhr.responseText
+    }
 
-  function fix_xhr(xhr) {
-    var fixed_xhr = {};
-    for (var key in xhr)
-      fixed_xhr[key] = xhr[key];
-    fixed_xhr.statusCode = xhr.status;
-    return fixed_xhr;
-  }
+    else if(xhr.readyState === XHR.DONE) {
+      LOG.debug('Request done', {'id':xhr.id})
 
-  var onSuccess = function(data, reason, xhr) {
-    result = [null, fix_xhr(xhr), data];
-  }
-
-  var onError = function (xhr, reason, er) {
-    var body = undefined;
-
-    if(reason == 'timeout') {
-      er = er || new Error("Request timeout");
-    } else if(reason == 'error') {
-      if(xhr.status > 299 && xhr.responseText.length > 0) {
-        // Looks like HTTP worked, so there is no error as far as request is concerned. Simulate a success scenario.
-        er = null;
-        body = xhr.responseText;
+      xhr.body = xhr.responseText
+      if(options.json) {
+        try        { xhr.body = JSON.parse(xhr.responseText) }
+        catch (er) { return callback(er, xhr)                }
       }
-    } else {
-      er = er || new Error("Unknown error; reason = " + reason);
+
+      return callback(null, xhr, xhr.body)
     }
-
-    result = [er, fix_xhr(xhr), body];
   }
-
-  var onComplete = function(xhr, reason) {
-    if(result.length === 0)
-      result = [new Error("Result does not exist at completion time")];
-    return callback && callback.apply(this, result);
-  }
-
-
-  var cors_creds = !!( options.creds || options.withCredentials );
-
-  return jQuery.ajax({ 'async'      : true
-                     , 'cache'      : (options.cache || false)
-                     , 'contentType': (options.headers['content-type'] || 'application/x-www-form-urlencoded')
-                     , 'type'       : options.method
-                     , 'url'        : options.uri
-                     , 'data'       : (options.body || undefined)
-                     , 'timeout'    : (options.timeout || request.DEFAULT_TIMEOUT)
-                     , 'dataType'   : 'text'
-                     , 'processData': false
-                     , 'beforeSend' : beforeSend
-                     , 'success'    : onSuccess
-                     , 'error'      : onError
-                     , 'complete'   : onComplete
-                     , 'xhrFields'  : { 'withCredentials': cors_creds
-                                      }
-                     });
-
 } // request
 
 request.withCredentials = false;
@@ -169,32 +183,27 @@ shortcuts.forEach(function(shortcut) {
 })
 
 //
-// JSON and CouchDB shortcuts
+// CouchDB shortcut
 //
 
-request.json = function(options, callback) {
-  options = JSON.parse(JSON.stringify(options));
-  options.headers = options.headers || {};
-  options.headers['accept'] = options.headers['accept'] || 'application/json';
-
-  if(options.method !== 'GET')
-    options.headers['content-type'] = 'application/json';
+request.couch = function(options, callback) {
+  // Just use the request API to do JSON.
+  options.json = true
+  if(options.body)
+    options.json = options.body
+  delete options.body
 
   return request(options, function(er, resp, body) {
-    if(!er)
-      body = JSON.parse(body)
-    return callback && callback(er, resp, body);
-  })
-}
-
-request.couch = function(options, callback) {
-  return request.json(options, function(er, resp, body) {
     if(er)
       return callback && callback(er, resp, body);
 
-    if((resp.status < 200 || resp.status > 299) && body.error)
+    if((resp.statusCode < 200 || resp.statusCode > 299) && body.error) {
       // The body is a Couch JSON object indicating the error.
-      return callback && callback(body, resp);
+      er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
+      er.error = body.error
+
+      return callback && callback(er, resp);
+    }
 
     return callback && callback(er, resp, body);
   })
@@ -245,4 +254,33 @@ function b64_enc (data) {
     }
 
     return enc;
+}
+
+function noop() {}
+
+function getLogger() {
+  var logger = {}
+    , levels = ['trace', 'debug', 'info', 'warn', 'error']
+    , level, i
+
+  for(i = 0; i < levels.length; i++) {
+    level = levels[i]
+
+    logger[level] = noop
+    if(typeof console !== 'undefined' && console && console[level])
+      logger[level] = formatted(console, level)
+  }
+
+  return logger
+}
+
+function formatted(obj, method) {
+  return formatted_logger
+
+  function formatted_logger(str, context) {
+    if(typeof context === 'object')
+      str += ' ' + JSON.stringify(context)
+
+    return obj[method].call(obj, str)
+  }
 }
