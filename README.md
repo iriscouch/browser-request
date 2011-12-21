@@ -93,7 +93,7 @@ define(['request'], function(request) {
 
 ## Traditional
 
-The traditional way is to use it like any other Javascript library. Add `build/request-browser.js` to your web application and use it from your page.
+The traditional way is to use it like any other Javascript library. Add `build/browser/request.js` to your web application and use it from your page.
 
 ```html
 <script src="request-browser.js"></script>

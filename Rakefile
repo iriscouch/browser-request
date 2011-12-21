@@ -18,9 +18,11 @@ HERE = File.expand_path(File.dirname __FILE__)
 
 BUILD        = "#{HERE}/build"
 COMMONJS     = "#{HERE}/build/commonjs"
+TRADITIONAL  = "#{HERE}/build/browser"
 
 XHR_PLAIN    = "#{HERE}/xmlhttprequest/xmlhttprequest.js"
 XHR_MAIN     = "#{COMMONJS}/xmlhttprequest.js"
+REQUEST_PLAIN= "#{HERE}/src/request.js"
 REQUEST_MAIN = "#{COMMONJS}/request.js"
 
 COMMONJS_TEMPLATE = "#{HERE}/template/commonjs_wrapper.js.erb"
@@ -33,7 +35,7 @@ task :clean do
 end
 
 desc "Build all package types"
-task :build => [:commonjs] #, :requirejs]
+task :build => [:commonjs, :traditional] #, :requirejs]
 
 #
 # CommonJS build
@@ -44,8 +46,8 @@ directory COMMONJS
 desc "Build CommonJS modules of Browser Request"
 task :commonjs => [ REQUEST_MAIN, XHR_MAIN ]
 
-file REQUEST_MAIN => [ COMMONJS, "#{HERE}/src/request.js" ] do |task|
-  cp "#{HERE}/src/request.js", task.name
+file REQUEST_MAIN => [ COMMONJS, REQUEST_PLAIN ] do |task|
+  cp REQUEST_PLAIN, task.name
 end
 
 file XHR_MAIN => [ COMMONJS, XHR_PLAIN, COMMONJS_TEMPLATE ] do |task|
@@ -55,8 +57,33 @@ file XHR_MAIN => [ COMMONJS, XHR_PLAIN, COMMONJS_TEMPLATE ] do |task|
   content = File.new(XHR_PLAIN).read
 
   File.new(task.name, 'w').write(js.result binding)
-  puts "Generated #{File.basename task.name}"
+  puts "Generated wrapped #{File.basename task.name}"
 end
+
+#
+# Traditional build
+#
+
+directory TRADITIONAL
+
+desc "Build a traditional, monolothic file for traditional web applications"
+task :traditional => [ "#{TRADITIONAL}/request.js" ]
+
+file "#{TRADITIONAL}/request.js" => [ TRADITIONAL, COMMONJS_TEMPLATE, XHR_PLAIN, REQUEST_PLAIN ] do |task|
+  wrapper = File.new(COMMONJS_TEMPLATE).read
+  js = ERB.new wrapper
+
+  xhr_content = File.new(XHR_PLAIN).read
+  req_content = File.new(REQUEST_PLAIN).read
+  content = xhr_content + "\n" + req_content
+
+  File.new(task.name, 'w').write(js.result binding)
+  puts "Generated traditional #{File.basename task.name}"
+end
+
+#
+# Tagging
+#
 
 desc 'Show how to tag a revision'
 task :tag do
