@@ -135,13 +135,13 @@ generated code into a tag, then clean up in a subsequent commit.
 
  1. Confirm the repo is clean
  2. rake clean && rake
- 3. git add -f #{BUILD} && git commit -m "Code release"
+ 3. git add -f build/ && git commit -m "Code release"
  4. ver="vX.Y.Z" # Set this to something.
  5. git tag -a -m "Tag release" "$ver"
  6. git push origin "$ver:/refs/tags/$ver"
  7. npm publish
  8. Edit package.json and bump the version
- 9. git rm #{BUILD}
+ 9. git rm build/
  10. git commit -m 'Working on <new version>'
 EOT
 end
