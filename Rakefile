@@ -67,8 +67,11 @@ file "#{COMMONJS}/xmlhttprequest.js" => [ COMMONJS, COMMONJS_TEMPLATE, XHR_SRC ]
 
   content = File.new(XHR_SRC).read
 
-  File.new(task.name, 'w').write(wrapper.result binding)
-  puts "Generated CommonJS-wrapped #{task.name}"
+  target = File.new task.name, 'w'
+  target.write(wrapper.result binding)
+  target.close
+
+  puts "Generated CommonJS-wrapped #{COMMONJS}/xmlhttprequest.js"
 end
 
 #
@@ -76,33 +79,42 @@ end
 #
 
 directory BROWSER
-directory "#{BROWSER}/split"
+directory "#{BROWSER}/parts"
 
 desc "Build a traditional, monolothic file for browser applications"
 task :browser => [ "#{BROWSER}/request.js" ] do
   puts "Browser build : #{BROWSER}/request.js"
 end
 
-file "#{BROWSER}/request.js" => [ BROWSER, "#{BROWSER}/split/request-only.js", "#{BROWSER}/split/XMLHttpRequest.js" ] do
-  xhr_content = File.new("#{BROWSER}/split/XMLHttpRequest.js").read
-  req_content = File.new("#{BROWSER}/split/request-only.js").read
+file "#{BROWSER}/request.js" => [ BROWSER, "#{BROWSER}/parts/request-only.js", "#{BROWSER}/parts/XMLHttpRequest.js" ] do
+  xhr_content = File.new("#{BROWSER}/parts/XMLHttpRequest.js").read
+  req_content = File.new("#{BROWSER}/parts/request-only.js").read
 
-  File.new("#{BROWSER}/request.js", 'w').write(xhr_content + "\n" + req_content)
-  puts "Generated monolithic #{task.name}"
+  combined = File.new("#{BROWSER}/request.js", 'w')
+  combined.write xhr_content
+  combined.write "\n"
+  combined.write req_content
+  combined.close
+
+  puts "Generated monolithic #{BROWSER}/request.js"
 end
 
-file "#{BROWSER}/split/XMLHttpRequest.js" => [ "#{BROWSER}/split", XHR_SRC ] do |task|
+file "#{BROWSER}/parts/XMLHttpRequest.js" => [ "#{BROWSER}/parts", XHR_SRC ] do |task|
   cp XHR_SRC, task.name
 end
 
-file "#{BROWSER}/split/request-only.js" => [ "#{BROWSER}/split", BROWSER_TEMPLATE, REQ_SRC ] do |task|
+file "#{BROWSER}/parts/request-only.js" => [ "#{BROWSER}/parts", BROWSER_TEMPLATE, REQ_SRC ] do |task|
   # Convert the CommonJS file to "browser" format.
   wrapper = File.new(BROWSER_TEMPLATE).read
   wrapper = ERB.new wrapper
 
+  module_name = "request"
   content = File.new(REQ_SRC).read
 
-  File.new(task.name, 'w').write(wrapper.result binding)
+  target = File.new "#{BROWSER}/parts/request-only.js", 'w'
+  target.write(wrapper.result binding)
+  target.close
+
   puts "Generated browser-format #{task.name}"
 end
 
