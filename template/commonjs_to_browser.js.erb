@@ -17,7 +17,7 @@
   function require(path) {
     if(path === './xmlhttprequest')
       return window && window.XMLHttpRequest
-    throw new Error('require() unsupported in the traditional build. Use RequireJS or Ender.')
+    throw new Error('require() unsupported in the browser build. Use RequireJS or Ender.')
   }
 
   var exports = {}
