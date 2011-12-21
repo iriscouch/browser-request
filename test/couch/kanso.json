@@ -5,6 +5,6 @@
                   }
 
 , "attachments": [ "index.html"
-                 , "../../build/browser/request.js"
+                 , "request.js"
                  ]
 }
