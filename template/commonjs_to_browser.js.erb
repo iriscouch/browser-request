@@ -22,9 +22,11 @@
     , module = { 'exports': exports }
 
   if(typeof window === 'undefined') {
-    var window = {}
     if(typeof console !== 'undefined' && console && console.error)
       console.error('Cannot find global "window" object. Is this a browser?')
+
+    // XXX Global variable
+    window = {}
   }
 
   var module_err = null
