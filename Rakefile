@@ -65,7 +65,7 @@ file XHR_MAIN => [ COMMONJS, XHR_PLAIN, COMMONJS_TEMPLATE ] do |task|
   content = File.new(XHR_PLAIN).read
 
   File.new(task.name, 'w').write(js.result binding)
-  puts "Generated wrapped #{File.basename task.name}"
+  puts "Generated wrapped #{task.name}"
 end
 
 #
@@ -86,7 +86,7 @@ file "#{TRADITIONAL}/request.js" => [ TRADITIONAL, COMMONJS_TEMPLATE, XHR_PLAIN,
   content = xhr_content + "\n" + req_content
 
   File.new(task.name, 'w').write(js.result binding)
-  puts "Generated traditional #{File.basename task.name}"
+  puts "Generated traditional #{task.name}"
 end
 
 #
