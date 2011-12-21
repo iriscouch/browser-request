@@ -37,6 +37,14 @@ end
 desc "Build all package types"
 task :build => [:commonjs, :traditional] #, :requirejs]
 
+file XHR_PLAIN do
+  puts "ERROR: Cannot find XMLHttpRequest project (git submodule). Try running this:"
+  puts
+  puts "git submodule update --init --recursive"
+  puts
+  raise "Cannot find XMLHttpRequest"
+end
+
 #
 # CommonJS build
 #
