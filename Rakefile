@@ -18,14 +18,13 @@ HERE = File.expand_path(File.dirname __FILE__)
 
 BUILD        = "#{HERE}/build"
 COMMONJS     = "#{HERE}/build/commonjs"
-TRADITIONAL  = "#{HERE}/build/browser"
+BROWSER      = "#{HERE}/build/browser"
 
-XHR_PLAIN    = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
-XHR_MAIN     = "#{COMMONJS}/xmlhttprequest.js"
-REQUEST_PLAIN= "#{HERE}/src/request.js"
-REQUEST_MAIN = "#{COMMONJS}/request.js"
+XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
+REQ_SRC      = "#{HERE}/src/request.js"
 
-COMMONJS_TEMPLATE = "#{HERE}/template/commonjs_wrapper.js.erb"
+COMMONJS_TEMPLATE = "#{HERE}/template/browser_to_commonjs.js.erb" # Browser code to CommonJS code
+BROWSER_TEMPLATE  = "#{HERE}/template/commonjs_to_browser.js.erb"
 
 task :default => :build
 
@@ -35,9 +34,9 @@ task :clean do
 end
 
 desc "Build all package types"
-task :build => [:commonjs, :traditional] #, :requirejs]
+task :build => [:commonjs, :browser] #, :requirejs]
 
-file XHR_PLAIN do
+file XHR_SRC do
   puts "ERROR: Cannot find XMLHttpRequest project (git submodule). Try running this:"
   puts
   puts "git submodule update --init --recursive"
@@ -52,41 +51,59 @@ end
 directory COMMONJS
 
 desc "Build CommonJS modules of Browser Request"
-task :commonjs => [ REQUEST_MAIN, XHR_MAIN ]
-
-file REQUEST_MAIN => [ COMMONJS, REQUEST_PLAIN ] do |task|
-  cp REQUEST_PLAIN, task.name
+task :commonjs => [ "#{COMMONJS}/xmlhttprequest.js", "#{COMMONJS}/request.js" ] do
+  puts "CommonJS build: #{COMMONJS}"
 end
 
-file XHR_MAIN => [ COMMONJS, XHR_PLAIN, COMMONJS_TEMPLATE ] do |task|
+file "#{COMMONJS}/request.js" => [ COMMONJS, REQ_SRC ] do |task|
+  # The source code is already in CommonJS format.
+  cp REQ_SRC, task.name
+end
+
+file "#{COMMONJS}/xmlhttprequest.js" => [ COMMONJS, COMMONJS_TEMPLATE, XHR_SRC ] do |task|
+  # Convert the "browser" format to CommonJS.
   wrapper = File.new(COMMONJS_TEMPLATE).read
-  js = ERB.new wrapper
+  wrapper = ERB.new wrapper
 
-  content = File.new(XHR_PLAIN).read
+  content = File.new(XHR_SRC).read
 
-  File.new(task.name, 'w').write(js.result binding)
-  puts "Generated wrapped #{task.name}"
+  File.new(task.name, 'w').write(wrapper.result binding)
+  puts "Generated CommonJS-wrapped #{task.name}"
 end
 
 #
-# Traditional build
+# Browser build
 #
 
-directory TRADITIONAL
+directory BROWSER
+directory "#{BROWSER}/split"
 
-desc "Build a traditional, monolothic file for traditional web applications"
-task :traditional => [ "#{TRADITIONAL}/request.js" ]
+desc "Build a traditional, monolothic file for browser applications"
+task :browser => [ "#{BROWSER}/request.js" ] do
+  puts "Browser build : #{BROWSER}/request.js"
+end
 
-file "#{TRADITIONAL}/request.js" => [ TRADITIONAL, COMMONJS_TEMPLATE, XHR_PLAIN, REQUEST_PLAIN ] do |task|
-  wrapper = File.new(COMMONJS_TEMPLATE).read
-  js = ERB.new wrapper
+file "#{BROWSER}/request.js" => [ BROWSER, "#{BROWSER}/split/request-only.js", "#{BROWSER}/split/XMLHttpRequest.js" ] do
+  xhr_content = File.new("#{BROWSER}/split/XMLHttpRequest.js").read
+  req_content = File.new("#{BROWSER}/split/request-only.js").read
 
-  xhr_content = File.new(XHR_PLAIN).read
-  req_content = File.new(REQUEST_PLAIN).read
-  content = xhr_content + "\n" + req_content
+  File.new("#{BROWSER}/request.js", 'w').write(xhr_content + "\n" + req_content)
+  puts "Generated monolithic #{task.name}"
+end
 
-  File.new(task.name, 'w').write(js.result binding)
-  puts "Generated traditional #{task.name}"
+file "#{BROWSER}/split/XMLHttpRequest.js" => [ "#{BROWSER}/split", XHR_SRC ] do |task|
+  cp XHR_SRC, task.name
+end
+
+file "#{BROWSER}/split/request-only.js" => [ "#{BROWSER}/split", BROWSER_TEMPLATE, REQ_SRC ] do |task|
+  # Convert the CommonJS file to "browser" format.
+  wrapper = File.new(BROWSER_TEMPLATE).read
+  wrapper = ERB.new wrapper
+
+  content = File.new(REQ_SRC).read
+
+  File.new(task.name, 'w').write(wrapper.result binding)
+  puts "Generated browser-format #{task.name}"
 end
 
 #
