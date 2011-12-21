@@ -6,5 +6,6 @@
 
 , "attachments": [ "index.html"
                  , "request.js"
+                 , "requirejs"
                  ]
 }
