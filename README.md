@@ -88,7 +88,7 @@ require(['request'], function(request) {
 The traditional way is to use it like any other Javascript library. Add `release/browser/request.js` to your web application and use it from your page.
 
 ```html
-<script src="request-browser.js"></script>
+<script src="request.js"></script>
 <script>
     request("/motd.html", function(er, res) {
         if(er)
