@@ -16,7 +16,7 @@ require 'erb'
 
 HERE = File.expand_path(File.dirname __FILE__)
 
-BUILD        = "#{HERE}/release"
+BUILD        = "#{HERE}/dist"
 ENDER        = "#{BUILD}/ender"
 BROWSER      = "#{BUILD}/browser"
 REQUIREJS    = "#{BUILD}/requirejs"
@@ -167,13 +167,13 @@ generated code into a tag, then clean up in a subsequent commit.
 
  1. Confirm the repo is clean
  2. rake clean && rake
- 3. git add -f release/ && git commit -m "Code release"
+ 3. git add -f dist/ && git commit -m "Code release"
  4. ver="vX.Y.Z" # Set this to something.
  5. git tag -a "$ver" -m some_tag_message
  6. git push origin "$ver:/refs/tags/$ver"
  7. npm publish
  8. Edit package.json and bump the version
- 9. git rm -r release/
+ 9. git rm -r dist/
  10. git commit -m 'Working on <new version>'
 EOT
 end

@@ -75,7 +75,7 @@ Browser Request is an [Ender][ender] package. If you don't have Ender, install i
 
 ## RequireJS
 
-Browser Request also supports [RequireJS][rjs]. Add `release/requirejs/request.js` and `release/requirejs/xmlhttprequest.js` to your web application and use it from your code.
+Browser Request also supports [RequireJS][rjs]. Add `dist/requirejs/request.js` and `dist/requirejs/xmlhttprequest.js` to your web application and use it from your code.
 
 ```javascript
 require(['request'], function(request) {
@@ -85,7 +85,7 @@ require(['request'], function(request) {
 
 ## Traditional
 
-The traditional way is to use it like any other Javascript library. Add `release/browser/request.js` to your web application and use it from your page.
+The traditional way is to use it like any other Javascript library. Add `dist/browser/request.js` to your web application and use it from your page.
 
 ```html
 <script src="request.js"></script>

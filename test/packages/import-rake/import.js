@@ -22,7 +22,7 @@ function import_rake(root, location, settings, doc, callback) {
   })
 
   function load(source) {
-    var source_path = path.join(home, 'release', source)
+    var source_path = path.join(home, 'dist', source)
 
     var content = fs.readFileSync(source_path)
 
