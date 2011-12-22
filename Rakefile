@@ -188,6 +188,6 @@ def rm(*opts)
 end
 
 def cp(*opts)
-  opts.unshift "-v" # Potentially remove this for platforms without cp -v
+  #opts.unshift "-v" # Potentially remove this for platforms without cp -v
   sh "cp", *opts
 end
