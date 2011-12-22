@@ -1,4 +1,4 @@
-<%# A CommonJS module as an ERB template
+<%# Convert a browser Javascript file to CommonJS.
   #
   # Licensed under the Apache License, Version 2.0 (the "License");
   # you may not use this file except in compliance with the License.
@@ -35,9 +35,22 @@
   if(!navigator.userAgent)
     navigator.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/534.51.22 (KHTML, like Gecko) Version/5.1.1 Safari/534.51.22';
 
+  // Remember the old values in window. If the inner code changes anything, export that as a module and restore the old window value.
+  var win = {}
+    , key
+
+  for (key in window)
+    if(window.hasOwnProperty(key))
+      win[key] = window[key]
+
   run_code()
-  //module.exports = window
-  exports.XMLHttpRequest = window.XMLHttpRequest
+
+  for (key in window)
+    if(window.hasOwnProperty(key))
+      if(window[key] !== win[key]) {
+        exports[key] = window[key]
+        window[key] = win[key]
+      }
 
   function run_code() {
     // Begin browser file: <%= module_name %>
