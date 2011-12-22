@@ -6,6 +6,7 @@
                   }
 
 , "attachments": [ "browser"
+                 , "ender"
                  , "requirejs"
                  ]
 }
