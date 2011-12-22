@@ -5,8 +5,7 @@
                   , "import-rake": null
                   }
 
-, "attachments": [ "index.html"
-                 , "request.js"
+, "attachments": [ "browser"
                  , "requirejs"
                  ]
 }
