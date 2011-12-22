@@ -1,4 +1,4 @@
 require(['request'], function(request) {
-  window.request = request
+  window.req = request
   console.log('ok')
 })
