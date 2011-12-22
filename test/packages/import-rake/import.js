@@ -8,7 +8,7 @@ var fs = require('fs')
 exports.run = import_rake
 
 function import_rake(root, location, settings, doc, callback) {
-  var home = path.dirname(path.dirname(location))
+  var home = path.dirname(location)
 
   child_process.exec('rake', function(er, stdout, stderr) {
     if(er) throw er
