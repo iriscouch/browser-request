@@ -165,7 +165,7 @@ I do not like generated code being managed by Git. However that is useful
 when people download tarballs from GitHub, etc. So the idea is to commit
 generated code into a tag, then clean up in a subsequent commit.
 
- 1. Confirm the repo is clean
+ 1. Confirm the repo is clean and package.json has the right version
  2. rake clean && rake
  3. git add -f dist/ && git commit -m "Code release"
  4. ver="vX.Y.Z" # Set this to something.
