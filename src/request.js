@@ -17,7 +17,9 @@ if(!xmlhttprequest || typeof xmlhttprequest !== 'object')
   throw new Error('Could not find ./xmlhttprequest')
 
 var XHR = xmlhttprequest.XMLHttpRequest
-if(XHR.name !== 'cXMLHttpRequest')
+if(!XHR)
+  throw new Error('Bad xmlhttprequest.XMLHttpRequest')
+if(! ('_object' in (new XHR)))
   throw new Error('This is not portable XMLHttpRequest')
 
 module.exports = request
