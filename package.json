@@ -12,6 +12,7 @@
 
 , "devDependencies": { "tap": "0.1.3"
                      , "ender": "~0.8.2"
+                     , "uglify-js": "~1.2.5"
                      }
 
 , "engines": [ "node" ]
