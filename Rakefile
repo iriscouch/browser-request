@@ -21,6 +21,8 @@ ENDER        = "#{BUILD}/ender"
 BROWSER      = "#{BUILD}/browser"
 REQUIREJS    = "#{BUILD}/requirejs"
 
+UGLIFY       = "#{HERE}/node_modules/.bin/uglifyjs"
+
 XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 REQ_SRC      = "#{HERE}/src/request.js"
 ENDER_SRC    = "#{HERE}/src/ender.js"
@@ -115,8 +117,12 @@ directory BROWSER
 directory "#{BROWSER}/parts"
 
 desc "Build a traditional, monolothic file for browser applications"
-task :browser => [ "#{BROWSER}/request.js" ] do
+task :browser => [ "#{BROWSER}/request.js", "#{BROWSER}/request-min.js" ] do
   puts "Browser build : #{BROWSER}/request.js"
+end
+
+file "#{BROWSER}/request-min.js" => [UGLIFY, "#{BROWSER}/request.js"] do |task|
+  sh UGLIFY, "--no-copyright", "--output", task.name, "#{BROWSER}/request.js"
 end
 
 file "#{BROWSER}/request.js" => [ BROWSER, "#{BROWSER}/parts/request-only.js", "#{BROWSER}/parts/XMLHttpRequest.js" ] do
@@ -149,6 +155,14 @@ file "#{BROWSER}/parts/request-only.js" => [ "#{BROWSER}/parts", BROWSER_TEMPLAT
   target.close
 
   puts "Generated browser-format #{task.name}"
+end
+
+#
+# Miscellaneous
+#
+
+file UGLIFY do
+  throw "uglify-js is missing. Try `npm install` to get the dev dependency: #{UGLIFY}"
 end
 
 #
