@@ -23,6 +23,7 @@ if(! ('_object' in (new XHR)))
   throw new Error('This is not portable XMLHttpRequest')
 
 module.exports = request
+request.XMLHttpRequest = XHR
 
 var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
   , LOG = getLogger()
