@@ -139,7 +139,7 @@ function run_xhr(options) {
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
   if(is_cors)
-    xhr._object.withCredentials = true
+    xhr._object.withCredentials = !! options.withCredentials
   xhr.send(options.body)
   return xhr
 
