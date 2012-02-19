@@ -125,7 +125,7 @@ function run_xhr(options) {
   }
 
   // Some states can be skipped over, so remember what is still incomplete.
-  var did = {'response':false, 'loading':false}
+  var did = {'response':false, 'loading':false, 'end':false}
 
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
@@ -180,6 +180,10 @@ function run_xhr(options) {
   }
 
   function on_end() {
+    if(did.end)
+      return
+
+    did.end = true
     LOG.debug('Request done', {'id':xhr.id})
 
     xhr.body = xhr.responseText
