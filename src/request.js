@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var xmlhttprequest = require('./xmlhttprequest')
+var xmlhttprequest = require('../xmlhttprequest/XMLHttpRequest')
 if(!xmlhttprequest || typeof xmlhttprequest !== 'object')
-  throw new Error('Could not find ./xmlhttprequest')
+  throw new Error('Could not find xmlhttprequest')
 
 var XHR = xmlhttprequest.XMLHttpRequest
 if(!XHR)
