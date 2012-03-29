@@ -17,4 +17,5 @@
 
 , "engines": [ "node" ]
 , "ender": "./dist/ender/ender.js"
+, "browserify": "./src/request.js"
 }
