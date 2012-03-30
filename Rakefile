@@ -21,7 +21,8 @@ ENDER        = "#{BUILD}/ender"
 BROWSER      = "#{BUILD}/browser"
 REQUIREJS    = "#{BUILD}/requirejs"
 
-UGLIFY       = "#{HERE}/node_modules/.bin/uglifyjs"
+UGLIFY       = ENV['uglifyjs']   || "#{HERE}/node_modules/.bin/uglifyjs"
+BROWSERIFY   = ENV['browserify'] || "#{HERE}/node_modules/.bin/browserify"
 
 XHR_SRC      = "#{HERE}/xmlhttprequest/XMLHttpRequest.js"
 REQ_SRC      = "#{HERE}/src/request.js"
@@ -158,11 +159,46 @@ file "#{BROWSER}/parts/request-only.js" => [ "#{BROWSER}/parts", BROWSER_TEMPLAT
 end
 
 #
+# Testing
+#
+
+desc "Push a bunch of test apps to a CouchDB server"
+task :test => [:build, BROWSERIFY] do
+  couch_db = ENV['db'] || "http://localhost:5984/test-browser-request"
+
+  begin
+    sh "curl", "--fail", "-XPUT", couch_db
+  rescue => e
+    puts "^^ That is fine. The DB already exists." if $?.exitstatus == 22
+    raise e unless $?.exitstatus == 22
+  end
+
+  # Build a browserify version from this package, to be tested as a first-class deployment type.
+  Dir.chdir "#{HERE}/test/browserify" do
+    sh "rm", "-rf", "package.json", "node_modules"
+    sh "mkdir", "-p", "node_modules/browser-request/dist/ender"
+    sh "cp", "#{HERE}/package.json", "node_modules/browser-request/"
+    sh "cp", "#{HERE}/dist/ender/request.js", "node_modules/browser-request/dist/ender/"
+    sh "cp", "#{HERE}/dist/ender/xmlhttprequest.js", "node_modules/browser-request/dist/ender/"
+    sh BROWSERIFY, "--outfile=browserified.js", "test.js"
+  end
+
+  sh "test/push.js", couch_db
+end
+
+# If you hit <tab> then command-line completion makes you run `rake test/`
+task "test/" => :test
+
+#
 # Miscellaneous
 #
 
 file UGLIFY do
   throw "uglify-js is missing. Try `npm install` to get the dev dependency: #{UGLIFY}"
+end
+
+file BROWSERIFY do
+  throw "browserify is missing. Try `npm install` to get the dev dependency: #{BROWSERIFY}"
 end
 
 #
