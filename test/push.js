@@ -27,7 +27,7 @@ function main() {
   builder.load('requirejs/test.js'          , __dirname + '/requirejs/test.js'                  , 'application/javascript')
   builder.load('browserify/test.js'         , __dirname + '/browserify/browserified.js'         , 'application/javascript')
 
-  // Each test is has a page, made from a common template.
+  // Each test is a web page, made from a common template.
   builder.template = __dirname + '/page.tmpl.html'
 
   builder.doc({_id:'browser'    , name:'Browser (full)'    , script:'request.js', start_me:true})
