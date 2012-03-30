@@ -36,7 +36,7 @@ task :default => :build
 
 desc "Clean everything"
 task :clean do
-  rm "-rf", BUILD #, XHR_MAIN
+  rm "-rf", BUILD, "#{HERE}/test/browserify/browserified.js", "#{HERE}/test/browserify/node_modules"
 end
 
 desc "Build all package types"
