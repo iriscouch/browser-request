@@ -1,0 +1,4 @@
+build/
+lib/compress-buffer/compress-buffer-bindings.node
+.lock-wscript
+nbproject/
