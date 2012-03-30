@@ -1,5 +1,0 @@
-{ "name": "import-rake"
-, "description": "A workaround because preprocessors from the top-level aren't running"
-, "version": "0.0.1"
-, "preprocessors": { "import": "./import" }
-}
