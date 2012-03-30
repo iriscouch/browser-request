@@ -2,7 +2,6 @@
 //
 // Push all the test code to CouchDB.
 
-var fs = require('fs')
 var SP = require('static-plus')
 
 if(require.main === module)
