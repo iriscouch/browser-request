@@ -24,9 +24,9 @@ if(! ('_object' in (new XHR)))
 
 module.exports = request
 request.XMLHttpRequest = XHR
+request.log = getLogger()
 
 var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
-  , LOG = getLogger()
 
 //
 // request
@@ -129,7 +129,7 @@ function run_xhr(options) {
     er.code = 'ETIMEDOUT'
     er.duration = options.timeout
 
-    LOG.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
+    request.log.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
     return options.callback(er, xhr)
   }
 
@@ -145,12 +145,12 @@ function run_xhr(options) {
 
   function on_state_change(event) {
     if(timed_out)
-      return LOG.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
+      return request.log.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
 
-    LOG.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
+    request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
 
     if(xhr.readyState === XHR.OPENED) {
-      LOG.debug('Request started', {'id':xhr.id})
+      request.log.debug('Request started', {'id':xhr.id})
       for (var key in options.headers)
         xhr.setRequestHeader(key, options.headers[key])
     }
@@ -175,7 +175,7 @@ function run_xhr(options) {
       return
 
     did.response = true
-    LOG.debug('Got response', {'id':xhr.id, 'status':xhr.status})
+    request.log.debug('Got response', {'id':xhr.id, 'status':xhr.status})
     clearTimeout(xhr.timeoutTimer)
     xhr.statusCode = xhr.status // Node request compatibility
 
@@ -199,7 +199,7 @@ function run_xhr(options) {
       return
 
     did.loading = true
-    LOG.debug('Response body loading', {'id':xhr.id})
+    request.log.debug('Response body loading', {'id':xhr.id})
     // TODO: Maybe simulate "data" events by watching xhr.responseText
   }
 
@@ -208,7 +208,7 @@ function run_xhr(options) {
       return
 
     did.end = true
-    LOG.debug('Request done', {'id':xhr.id})
+    request.log.debug('Request done', {'id':xhr.id})
 
     xhr.body = xhr.responseText
     if(options.json) {
