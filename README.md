@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/iriscouch/browser-request.png)](http://travis-ci.org/iriscouch/browser-request)
 # Browser Request: The easiest HTTP library you'll ever see
 
 Browser Request is a port of Mikeal Rogers's ubiquitous and excellent [request][req] package to the browser.
