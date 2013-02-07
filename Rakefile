@@ -220,7 +220,7 @@ generated code into a tag, then clean up in a subsequent commit.
  3. ver=v$(node -e 'console.log(require("./package.json").version)'); echo "Tag: $ver"
  4. git add -f dist/ && git commit -m "Code release"
  5. git tag -a "$ver" -m some_tag_message
- 6. git push origin "$ver:/refs/tags/$ver"
+ 6. git push origin && git push origin --tags
  7. npm publish
  8. Edit package.json and bump the version
  9. git rm -r dist/
