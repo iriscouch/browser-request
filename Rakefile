@@ -36,7 +36,7 @@ task :default => :build
 
 desc "Clean everything"
 task :clean do
-  rm "-rf", BUILD, "#{HERE}/test/browserify/browserified.js", "#{HERE}/test/browserify/node_modules"
+  rm_cmd "-rf", BUILD, "#{HERE}/test/browserify/browserified.js", "#{HERE}/test/browserify/node_modules"
 end
 
 desc "Build all package types"
@@ -232,7 +232,7 @@ end
 # Helpers
 #
 
-def rm(*opts)
+def rm_cmd(*opts)
   opts.unshift "-v" # Potentially remove this for platforms without rm -v
   sh "rm", *opts
 end
