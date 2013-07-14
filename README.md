@@ -6,6 +6,8 @@ Jealous of Node.js? Pining for clever callbacks? Request is for you.
 
 Don't care about Node.js? Looking for less tedium and a no-nonsense API? Request is for you too.
 
+[![browser support](https://ci.testling.com/maxogden/browser-request.png)](https://ci.testling.com/maxogden/browser-request)
+
 # Examples
 
 Fetch a resource:
@@ -90,7 +92,7 @@ request('/', function(er, res) {
 })
 ```
 
-To build this for the browser, run it throubh browserify.
+To build this for the browser, run it through browserify.
 
     $ browserify --entry example.js --outfile example-built.js
 
@@ -99,45 +101,7 @@ Deploy `example-built.js` to your web site and use it from your page.
 ```html
   <script src="example-built.js"></script> <!-- Runs the request, outputs the result to the console -->
 ```
-
-## Ender
-
-Browser Request is an [Ender][ender] package. If you don't have Ender, install it, and don't ever look back.
-
-    $ ender add browser-request
-
-## RequireJS
-
-Browser Request also supports [RequireJS][rjs]. Add `dist/requirejs/request.js` and `dist/requirejs/xmlhttprequest.js` to your web application and use it from your code.
-
-```javascript
-require(['request'], function(request) {
-  // request is ready.
-})
-```
-
-## Traditional
-
-The traditional way is to use it like any other Javascript library. Add `dist/browser/request.js` to your web application and use it from your page.
-
-```html
-<script src="request.js"></script>
-<script>
-    request("/motd.html", function(er, res) {
-        if(er)
-            return console.error('Failed to get the message of the day')
-        console.log('Got the message of the day')
-    })
-</script>
-```
-
 ## License
 
 Browser Request is licensed under the Apache 2.0 license.
 
-Browser Request uses Sergey Ilinsky's [XMLHttpRequest][xhr] package, licended under the terms of the LGPL 2.1 or later.
-
-[req]: https://github.com/mikeal/request
-[rjs]: http://requirejs.org/
-[xhr]: https://github.com/ilinsky/xmlhttprequest
-[ender]: http://ender.no.de
