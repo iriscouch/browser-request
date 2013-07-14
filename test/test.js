@@ -1,6 +1,6 @@
 var test = require('tape')
 
-var request = require('browser-request')
+var request = require('../')
 
 test('try a CORS GET', function (t) {
   t.plan(2)
