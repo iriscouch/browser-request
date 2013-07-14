@@ -13,10 +13,10 @@
     "ender",
     "browserify"
   ],
-  "homepage": "http://github.com/iriscouch/browser-request",
+  "homepage": "http://github.com/maxogden/browser-request",
   "repository": {
     "type": "git",
-    "url": "git://github.com/iriscouch/browser-request"
+    "url": "git://github.com/maxogden/browser-request"
   },
   "scripts": {
     "test": "beefy test.js"
