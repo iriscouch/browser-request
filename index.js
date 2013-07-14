@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var xmlhttprequest = require('./xmlhttprequest')
-if(!xmlhttprequest || typeof xmlhttprequest !== 'object')
-  throw new Error('Could not find ./xmlhttprequest')
-
-var XHR = xmlhttprequest.XMLHttpRequest
-if(!XHR)
-  throw new Error('Bad xmlhttprequest.XMLHttpRequest')
-if(! ('_object' in (new XHR)))
-  throw new Error('This is not portable XMLHttpRequest')
+var XHR = XMLHttpRequest
+if (!XHR) throw new Error('missing XMLHttpRequest')
 
 module.exports = request
-request.XMLHttpRequest = XHR
 request.log = getLogger()
 
 var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
@@ -109,7 +101,7 @@ function run_xhr(options) {
   var xhr = new XHR
     , timed_out = false
     , is_cors = is_crossDomain(options.uri)
-    , supports_cors = ('withCredentials' in xhr._object)
+    , supports_cors = ('withCredentials' in xhr)
 
   req_seq += 1
   xhr.seq_id = req_seq
@@ -139,7 +131,7 @@ function run_xhr(options) {
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
   if(is_cors)
-    xhr._object.withCredentials = !! options.withCredentials
+    xhr.withCredentials = !! options.withCredentials
   xhr.send(options.body)
   return xhr
 

@@ -16,6 +16,7 @@
                      }
 
 , "devDependencies": { "tap": "0.1.3"
+                     , "tape": "~0.0.4"
                      , "ender": "~0.8.2"
                      , "static-plus": "~0.2.4"
                      , "uglify-js": "~1.2.5"
@@ -23,6 +24,14 @@
                      }
 
 , "engines": [ "node" ]
-, "ender": "./dist/ender/ender.js"
-, "browserify": "./dist/ender/request.js"
+, "testling": {
+    "files": "test/testling.js",
+    "browsers": {
+      "ie": [ 8, 9 ],
+      "firefox": [ 13 ],
+      "chrome": [ 20 ],
+      "safari": [ 5.1 ],
+      "opera": [ 12 ]
+    }
+  }
 }
