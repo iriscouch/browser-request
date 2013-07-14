@@ -25,11 +25,11 @@
 
 , "engines": [ "node" ]
 , "testling": {
-    "files": "test/testling.js",
+    "files": "test/test.js",
     "browsers": {
-      "ie": [ 8, 9 ],
-      "firefox": [ 13 ],
-      "chrome": [ 20 ],
+      "ie": [ 8, 9, 10 ],
+      "firefox": [ 19, 'nightly' ],
+      "chrome": [ 25, 'canary' ],
       "safari": [ 5.1 ],
       "opera": [ 12 ]
     }
