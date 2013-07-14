@@ -16,7 +16,9 @@ var XHR = XMLHttpRequest
 if (!XHR) throw new Error('missing XMLHttpRequest')
 
 module.exports = request
-request.log = getLogger()
+request.log = {
+  'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
+}
 
 var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
 
@@ -40,6 +42,8 @@ function request(options, callback) {
     options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
 
   options.onResponse = options_onResponse // And put it back.
+
+  if (options.verbose) request.log = getLogger();
 
   if(options.url) {
     options.uri = options.url;
