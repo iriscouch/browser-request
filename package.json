@@ -1,28 +1,47 @@
-{ "name": "browser-request"
-, "version"     : "0.2.2"
-, "author"      : { "name": "Jason Smith" , "email": "jhs@iriscouch.com" }
-, "description" : "Browser port of the Node.js 'request' package"
-, "keywords"    : ["request", "http", "browser", "ender", "browserify"]
-, "homepage"    : "http://github.com/iriscouch/browser-request"
-, "repository"  : { "type": "git"
-                  , "url": "git://github.com/iriscouch/browser-request" }
-
-, "scripts": { "prepublish": "rake"
-             , "build"     : "rake"
-             , "test"      : "rake test"
-             }
-
-, "dependencies"   : {
-                     }
-
-, "devDependencies": { "tap": "0.1.3"
-                     , "ender": "~0.8.2"
-                     , "static-plus": "~0.2.4"
-                     , "uglify-js": "~1.2.5"
-                     , "browserify": "~1.10.6"
-                     }
-
-, "engines": [ "node" ]
-, "ender": "./dist/ender/ender.js"
-, "browserify": "./dist/ender/request.js"
+{
+  "name": "browser-request",
+  "version": "0.2.2",
+  "author": {
+    "name": "Jason Smith",
+    "email": "jhs@iriscouch.com"
+  },
+  "description": "Browser port of the Node.js 'request' package",
+  "keywords": [
+    "request",
+    "http",
+    "browser",
+    "ender",
+    "browserify"
+  ],
+  "homepage": "http://github.com/maxogden/browser-request",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/maxogden/browser-request"
+  },
+  "scripts": {
+    "test": "beefy test.js"
+  },
+  "devDependencies": {
+    "tap": "0.1.3",
+    "tape": "~1.0.4",
+    "beefy": "~0.4.0",
+    "browserify": "~2.25.0"
+  },
+  "engines": [
+    "node"
+  ],
+  "testling": {
+    "files": "test.js",
+    "browsers": [
+      "ie/6..latest",
+      "firefox/3..5",
+      "firefox/19..nightly",
+      "chrome/4..7",
+      "chrome/24..canary",
+      "opera/10..next",
+      "safari/4..latest",
+      "iphone/6",
+      "ipad/6"
+    ]
+  }
 }
