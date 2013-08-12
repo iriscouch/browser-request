@@ -6,7 +6,7 @@ Jealous of Node.js? Pining for clever callbacks? Request is for you.
 
 Don't care about Node.js? Looking for less tedium and a no-nonsense API? Request is for you too.
 
-[![browser support](https://ci.testling.com/maxogden/browser-request.png)](https://ci.testling.com/maxogden/browser-request)
+[![browser support](https://ci.testling.com/iriscouch/browser-request.png)](https://ci.testling.com/maxogden/browser-request)
 
 # Examples
 
