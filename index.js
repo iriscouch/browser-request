@@ -221,6 +221,36 @@ request.withCredentials = false;
 request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
 
 //
+// defaults
+//
+
+request.defaults = function (options, requester) {
+  var def = function (method) {
+    var d = function (uri, opts, callback) {
+      var params = initParams(uri, opts, callback)
+      for (var i in options) {
+        if (params.options[i] === undefined) params.options[i] = options[i]
+      }
+      if(typeof requester === 'function') {
+        if(method === request) {
+          method = requester
+        } else {
+          params.options._requester = requester
+        }
+      }
+      return method(params.options, params.callback)
+    }
+    return d
+  }
+  var de = def(request)
+  de.get = def(request.get)
+  de.post = def(request.post)
+  de.put = def(request.put)
+  de.head = def(request.head)
+  return de
+}
+
+//
 // HTTP method shortcuts
 //
 
