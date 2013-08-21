@@ -226,8 +226,12 @@ request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
 
 request.defaults = function (options, requester) {
   var def = function (method) {
-    var d = function (uri, opts, callback) {
-      var params = initParams(uri, opts, callback)
+    var d = function (params, callback) {
+      if(typeof params === 'string')
+        params = {'uri': params};
+      else {
+        params = JSON.parse(JSON.stringify(params));
+      }
       for (var i in options) {
         if (params.options[i] === undefined) params.options[i] = options[i]
       }
