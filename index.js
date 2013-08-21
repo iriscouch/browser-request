@@ -224,7 +224,7 @@ request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
 // defaults
 //
 
-request.defaults = function (options, requester) {
+request.defaults = function(options, requester) {
   var def = function (method) {
     var d = function (params, callback) {
       if(typeof params === 'string')
@@ -233,16 +233,9 @@ request.defaults = function (options, requester) {
         params = JSON.parse(JSON.stringify(params));
       }
       for (var i in options) {
-        if (params.options[i] === undefined) params.options[i] = options[i]
+        if (params[i] === undefined) params[i] = options[i]
       }
-      if(typeof requester === 'function') {
-        if(method === request) {
-          method = requester
-        } else {
-          params.options._requester = requester
-        }
-      }
-      return method(params.options, params.callback)
+      return method(params, callback)
     }
     return d
   }
