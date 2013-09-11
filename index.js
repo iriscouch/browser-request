@@ -77,7 +77,7 @@ function request(options, callback) {
 
     if(typeof options.json !== 'boolean')
       options.body = JSON.stringify(options.json)
-    else if(typeof options.body !== 'string')
+    else if(typeof options.body === 'object' && options.body !== null)
       options.body = JSON.stringify(options.body)
   }
 
