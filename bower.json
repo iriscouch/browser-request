@@ -1,0 +1,25 @@
+{
+  "name": "browser-request",
+  "description": "Browser port of the Node.js 'request' package",
+  "main": "index.js",
+  "keywords": [
+    "request",
+    "http",
+    "browser",
+    "browserify"
+  ],
+  "authors": [
+    "Jason Smith <jhs@iriscouch.com>"
+  ],
+  "version": "0.3.2",
+  "homepage": "https://github.com/voronianski/browser-request",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "test.js"
+  ]
+}
