@@ -20,6 +20,9 @@
   "scripts": {
     "test": "beefy test.js"
   },
+  "dependencies": {
+    "qs": "~0.6.6"
+  },
   "devDependencies": {
     "tape": "~1.0.4",
     "beefy": "~0.4.0",

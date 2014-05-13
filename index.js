@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+qs = require('qs')
+
 var XHR = XMLHttpRequest
 if (!XHR) throw new Error('missing XMLHttpRequest')
 request.log = {
@@ -53,6 +55,22 @@ function request(options, callback) {
 
   if(typeof options.uri != "string")
     throw new Error("options.uri must be a string");
+
+  // Parse query object
+  if (options.qs) {
+    if (options.uri.query) 
+      base = qs.parse(options.uri.query);
+    else 
+      base = {};
+
+    for (var i in options.qs) {
+      base[i] = options.qs[i];
+    }
+
+    if (qs.stringify(base) !== '') {
+      options.uri = options.uri.split('?')[0] + '?' + qs.stringify(base);
+    }    
+  }
 
   var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
   for (var i = 0; i < unsupported_options.length; i++)
