@@ -271,7 +271,7 @@ function run_xhr(options) {
     xhr.body = xhr.responseText
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
-      catch (er) { return options.callback(er, xhr)        }
+      catch (e) { }
     }
 
     options.callback(null, xhr, xhr.body)
