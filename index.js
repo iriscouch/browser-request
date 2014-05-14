@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var XHR = XMLHttpRequest
-if (!XHR) throw new Error('missing XMLHttpRequest')
+var GetXHR = function(){
+  if(!XMLHttpRequest){
+    throw new Error('missing XMLHttpRequest');
+  }
+  return XMLHttpRequest;
+}
+
 request.log = {
   'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
 }
@@ -164,7 +169,8 @@ function request(options, callback) {
 
 var req_seq = 0
 function run_xhr(options) {
-  var xhr = new XHR
+  var XHR = GetXHR();
+  var xhr = new XHR()
     , timed_out = false
     , is_cors = is_crossDomain(options.uri)
     , supports_cors = ('withCredentials' in xhr)
@@ -271,7 +277,7 @@ function run_xhr(options) {
     xhr.body = xhr.responseText
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
-      catch (er) { return options.callback(er, xhr)        }
+      catch (e) { }
     }
 
     options.callback(null, xhr, xhr.body)
