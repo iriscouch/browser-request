@@ -196,6 +196,10 @@ function run_xhr(options) {
 
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
+  // Deal with requests for raw buffer response
+  if(options.encoding === null) {
+    xhr.responseType = 'arraybuffer';
+  }
   if(is_cors)
     xhr.withCredentials = !! options.withCredentials
   xhr.send(options.body)
@@ -268,10 +272,14 @@ function run_xhr(options) {
     did.end = true
     request.log.debug('Request done', {'id':xhr.id})
 
-    xhr.body = xhr.responseText
-    if(options.json) {
-      try        { xhr.body = JSON.parse(xhr.responseText) }
-      catch (er) { return options.callback(er, xhr)        }
+    if(options.encoding === null) {
+      xhr.body = new Buffer(new Uint8Array(xhr.response));
+    } else {
+      xhr.body = xhr.responseText
+      if(options.json) {
+        try        { xhr.body = JSON.parse(xhr.responseText) }
+        catch (er) { return options.callback(er, xhr)        }
+      }
     }
 
     options.callback(null, xhr, xhr.body)
