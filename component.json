@@ -1,0 +1,11 @@
+{
+  "name": "request",
+  "description": "Browser library compatible with Node.js request package",
+  "version": "0.3.0",
+  "keywords": ["request"],
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ]
+}
