@@ -18,3 +18,12 @@ test('json true', function (t) {
     t.end()
   })
 })
+
+test('blob true', function (t) {
+  var url = 'http://lorempixel.com/100/100/'
+  request({url: url, blob: true}, function(err, resp, blob) {
+    t.equal(resp.statusCode, 200)
+    t.equal(!!blob.type.match(/^image/), true)
+    t.end()
+  })
+})
