@@ -196,6 +196,8 @@ function run_xhr(options) {
 
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
+  if(options.blob)
+    xhr.responseType = 'blob'
   if(is_cors)
     xhr.withCredentials = !! options.withCredentials
   xhr.send(options.body)
@@ -268,7 +270,11 @@ function run_xhr(options) {
     did.end = true
     request.log.debug('Request done', {'id':xhr.id})
 
-    xhr.body = xhr.responseText
+    if(options.blob)
+      xhr.body = xhr.response;
+    else
+      xhr.body = xhr.responseText
+
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
       catch (er) { return options.callback(er, xhr)        }
