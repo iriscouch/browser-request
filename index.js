@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var XHR = XMLHttpRequest
-if (!XHR) throw new Error('missing XMLHttpRequest')
+if (!global.XMLHttpRequest) throw new Error('missing XMLHttpRequest')
 request.log = {
   'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
 }
@@ -164,7 +163,7 @@ function request(options, callback) {
 
 var req_seq = 0
 function run_xhr(options) {
-  var xhr = new XHR
+  var xhr = new global.XMLHttpRequest()
     , timed_out = false
     , is_cors = is_crossDomain(options.uri)
     , supports_cors = ('withCredentials' in xhr)
@@ -207,21 +206,21 @@ function run_xhr(options) {
 
     request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
 
-    if(xhr.readyState === XHR.OPENED) {
+    if(xhr.readyState === global.XMLHttpRequest.OPENED) {
       request.log.debug('Request started', {'id':xhr.id})
       for (var key in options.headers)
         xhr.setRequestHeader(key, options.headers[key])
     }
 
-    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
+    else if(xhr.readyState === global.XMLHttpRequest.HEADERS_RECEIVED)
       on_response()
 
-    else if(xhr.readyState === XHR.LOADING) {
+    else if(xhr.readyState === global.XMLHttpRequest.LOADING) {
       on_response()
       on_loading()
     }
 
-    else if(xhr.readyState === XHR.DONE) {
+    else if(xhr.readyState === global.XMLHttpRequest.DONE) {
       on_response()
       on_loading()
       on_end()
