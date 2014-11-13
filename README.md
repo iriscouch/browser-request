@@ -101,6 +101,17 @@ Deploy `example-built.js` to your web site and use it from your page.
 ```html
   <script src="example-built.js"></script> <!-- Runs the request, outputs the result to the console -->
 ```
+
+## UMD
+
+`browser-request` is [UMD](https://github.com/umdjs/umd) wrapped, allowing you to serve it directly to the browser from wherever you store the module.
+
+```html
+  <script src="/node_modules/browser-request/index.js"></script> <!-- Assigns the module to window.request -->
+```
+
+You may also use an [AMD loader](http://requirejs.org/docs/whyamd.html) by referencing the same file in your loader [config](http://requirejs.org/docs/api.html#config).
+    
 ## License
 
 Browser Request is licensed under the Apache 2.0 license.
