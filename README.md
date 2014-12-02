@@ -105,4 +105,5 @@ Deploy `example-built.js` to your web site and use it from your page.
 
 Browser Request is licensed under the Apache 2.0 license.
 
+[browserify]: http://browserify.org/
 [req]: https://github.com/mikeal/request
