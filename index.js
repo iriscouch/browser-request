@@ -157,7 +157,7 @@ function request(options, callback) {
 
   // HTTP basic authentication
   if(!options.headers.authorization && options.auth)
-    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
+    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username || options.auth.user + ':' + options.auth.password || options.auth.pass);
 
   return run_xhr(options)
 }
