@@ -38,8 +38,8 @@ request({method:'POST', url:'/db', body:'{"relaxed":true}', json:true}, on_respo
 function on_response(er, response, body) {
   if(er)
     throw er
-  if(result.ok)
-    console.log('Server ok, id = ' + result.id)
+  if(response.ok)
+    console.log('Server ok, id = ' + response.id)
 }
 ```
 
