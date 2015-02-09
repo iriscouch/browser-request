@@ -51,6 +51,8 @@ function request(options, callback) {
   if(!options.uri && options.uri !== "")
     throw new Error("options.uri is a required argument");
 
+  if(typeof options.uri === "object")
+    options.uri = options.uri.href;
   if(typeof options.uri != "string")
     throw new Error("options.uri must be a string");
 
