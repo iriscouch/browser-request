@@ -35,7 +35,7 @@ To work with JSON, set `options.json` to `true`. Request will set the `Content-T
 ```javascript
 request({method:'POST', url:'/db', body:'{"relaxed":true}', json:true}, on_response)
 
-function on_response(er, response, body) {
+function on_response(er, response, result) {
   if(er)
     throw er
   if(result.ok)
