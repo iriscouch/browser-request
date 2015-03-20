@@ -78,7 +78,7 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
   var serialize = function(obj) {
     var str = [];
@@ -88,7 +88,7 @@ function request(options, callback) {
       }
     return str.join("&");
   }
-  
+
   if(options.qs){
     var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
     if(options.uri.indexOf('?') !== -1){ //no get params
@@ -98,7 +98,7 @@ function request(options, callback) {
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
@@ -121,7 +121,7 @@ function request(options, callback) {
     result.type = 'multipart/form-data; boundary='+result.boundry;
     return result;
   }
-  
+
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
     if(options.method === 'POST'){
@@ -306,6 +306,7 @@ request.defaults = function(options, requester) {
   de.post = def(request.post)
   de.put = def(request.put)
   de.head = def(request.head)
+  de.delete = def(request.delete)
   return de
 }
 
@@ -313,7 +314,7 @@ request.defaults = function(options, requester) {
 // HTTP method shortcuts
 //
 
-var shortcuts = [ 'get', 'put', 'post', 'head' ];
+var shortcuts = [ 'get', 'put', 'post', 'head', 'delete' ];
 shortcuts.forEach(function(shortcut) {
   var method = shortcut.toUpperCase();
   var func   = shortcut.toLowerCase();
