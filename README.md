@@ -96,11 +96,30 @@ To build this for the browser, run it through browserify.
 
     $ browserify --entry example.js --outfile example-built.js
 
+
 Deploy `example-built.js` to your web site and use it from your page.
 
 ```html
   <script src="example-built.js"></script> <!-- Runs the request, outputs the result to the console -->
 ```
+
+## Switch between request and browser-request when browserify
+
+In order to switch between regular `request` and `browser-request` when browserify, add the following to the `package.json`
+
+
+```json
+  "browser": {
+    "request": "browser-request"
+  }
+```
+
+Now you can just call `request` and browserify will know what to do.
+
+```javascript
+var request = require('request')
+```
+
 ## License
 
 Browser Request is licensed under the Apache 2.0 license.
