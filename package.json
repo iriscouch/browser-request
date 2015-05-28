@@ -28,6 +28,7 @@
   "engines": [
     "node"
   ],
+  "license": "Apache-2.0",
   "testling": {
     "files": "test.js",
     "browsers": [
