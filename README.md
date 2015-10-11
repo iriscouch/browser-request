@@ -71,36 +71,12 @@ See the [Node.js Request README][req] for several more examples. Request intends
 
 ## Browserify
 
-Browser Request is a [browserify][browserify]-enabled package.
+To build Browser Request, run:
 
-First, add `browser-request` to your Node project
+    npm run build
 
-    $ npm install browser-request
+a `dist` directory will be created with `request.js` and `request.min.js`.
 
-Next, make a module that uses the package.
-
-```javascript
-// example.js - Example front-end (client-side) code using browser-request via browserify
-//
-var request = require('browser-request')
-request('/', function(er, res) {
-  if(!er)
-    return console.log('browser-request got your root path:\n' + res.body)
-
-  console.log('There was an error, but at least browser-request loaded and ran!')
-  throw er
-})
-```
-
-To build this for the browser, run it through browserify.
-
-    $ browserify --entry example.js --outfile example-built.js
-
-Deploy `example-built.js` to your web site and use it from your page.
-
-```html
-  <script src="example-built.js"></script> <!-- Runs the request, outputs the result to the console -->
-```
 ## License
 
 Browser Request is licensed under the Apache 2.0 license.
