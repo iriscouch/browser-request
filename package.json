@@ -18,12 +18,15 @@
     "url": "git://github.com/iriscouch/browser-request"
   },
   "scripts": {
-    "test": "beefy test.js"
+    "test": "beefy test.js",
+    "build": "mkdir -p dist && browserify index.js -o dist/request.js -s request && cd dist && uglifyjs request.js -o request.min.js",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "tape": "~1.0.4",
     "beefy": "~0.4.0",
-    "browserify": "~2.25.0"
+    "browserify": "~2.25.0",
+    "uglify-js": "~2.4.24"
   },
   "engines": [
     "node"
