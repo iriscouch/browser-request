@@ -41,5 +41,6 @@
       "iphone/6",
       "ipad/6"
     ]
-  }
+  },
+  "license": "Apache-2.0"
 }
