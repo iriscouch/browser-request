@@ -54,10 +54,13 @@ function request(options, callback) {
   if(typeof options.uri != "string")
     throw new Error("options.uri must be a string");
 
-  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
+  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects']
   for (var i = 0; i < unsupported_options.length; i++)
     if(options[ unsupported_options[i] ])
       throw new Error("options." + unsupported_options[i] + " is not supported")
+
+  if ('followRedirect' in options && !options.followRedirect)
+    throw new Error("options.followRedirect == false is not supported")
 
   options.callback = callback
   options.method = options.method || 'GET';
