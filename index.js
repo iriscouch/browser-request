@@ -78,14 +78,16 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
-  var serialize = function(obj) {
+  var serialize = function(obj, prefix) {
     var str = [];
-    for(var p in obj)
+    for(var p in obj) {
       if (obj.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+        str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
       }
+    }
     return str.join("&");
   }
   
@@ -98,7 +100,7 @@ function request(options, callback) {
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
@@ -121,7 +123,7 @@ function request(options, callback) {
     result.type = 'multipart/form-data; boundary='+result.boundry;
     return result;
   }
-  
+
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
     if(options.method === 'POST'){
