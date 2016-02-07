@@ -6,6 +6,7 @@
     "email": "jhs@iriscouch.com"
   },
   "description": "Browser port of the Node.js 'request' package",
+  "license": "Apache-2.0",
   "keywords": [
     "request",
     "http",
