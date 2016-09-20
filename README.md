@@ -71,7 +71,7 @@ See the [Node.js Request README][req] for several more examples. Request intends
 
 ## Browserify
 
-Browser Request is a [browserify][browserify]-enabled package.
+Browser Request is a [browserify](http://browserify.org/)-enabled package.
 
 First, add `browser-request` to your Node project
 
