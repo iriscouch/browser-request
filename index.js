@@ -270,7 +270,7 @@ function run_xhr(options) {
 
     xhr.body = xhr.responseText
     if(options.json) {
-      try        { xhr.body = xhr.statusCode == 204 ? undefined : JSON.parse(xhr.responseText) }
+      try        { xhr.body = xhr.responseText && JSON.parse(xhr.responseText) || undefined }
       catch (er) { return options.callback(er, xhr)        }
     }
 
