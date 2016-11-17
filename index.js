@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var httpHeaders = require('http-headers')
 var XHR = XMLHttpRequest
 if (!XHR) throw new Error('missing XMLHttpRequest')
 request.log = {
@@ -32,41 +33,41 @@ function request(options, callback) {
   if(!options)
     throw new Error('No options given')
 
-  var options_onResponse = options.onResponse; // Save this for later.
+  var options_onResponse = options.onResponse // Save this for later.
 
   if(typeof options === 'string')
-    options = {'uri':options};
+    options = {'uri':options}
   else
-    options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
+    options = JSON.parse(JSON.stringify(options)) // Use a duplicate for mutating.
 
   options.onResponse = options_onResponse // And put it back.
 
-  if (options.verbose) request.log = getLogger();
+  if (options.verbose) request.log = getLogger()
 
   if(options.url) {
-    options.uri = options.url;
-    delete options.url;
+    options.uri = options.url
+    delete options.url
   }
 
   if(!options.uri && options.uri !== "")
-    throw new Error("options.uri is a required argument");
+    throw new Error("options.uri is a required argument")
 
   if(typeof options.uri != "string")
-    throw new Error("options.uri must be a string");
+    throw new Error("options.uri must be a string")
 
   var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
   for (var i = 0; i < unsupported_options.length; i++)
     if(options[ unsupported_options[i] ])
-      throw new Error("options." + unsupported_options[i] + " is not supported")
+    throw new Error("options." + unsupported_options[i] + " is not supported")
 
   options.callback = callback
-  options.method = options.method || 'GET';
-  options.headers = options.headers || {};
+  options.method = options.method || 'GET'
+  options.headers = options.headers || {}
   options.body    = options.body || null
   options.timeout = options.timeout || request.DEFAULT_TIMEOUT
 
   if(options.headers.host)
-    throw new Error("Options.headers.host is not supported");
+    throw new Error("Options.headers.host is not supported")
 
   if(options.json) {
     options.headers.accept = options.headers.accept || 'application/json'
@@ -78,67 +79,67 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
   var serialize = function(obj) {
-    var str = [];
+    var str = []
     for(var p in obj)
       if (obj.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]))
       }
-    return str.join("&");
+    return str.join("&")
   }
-  
+
   if(options.qs){
-    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
+    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs)
     if(options.uri.indexOf('?') !== -1){ //no get params
-        options.uri = options.uri+'&'+qs;
+      options.uri = options.uri+'&'+qs
     }else{ //existing get params
-        options.uri = options.uri+'?'+qs;
+      options.uri = options.uri+'?'+qs
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
-    var result = {};
-    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000);
-    var lines = [];
+    var result = {}
+    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000)
+    var lines = []
     for(var p in obj){
-        if (obj.hasOwnProperty(p)) {
-            lines.push(
-                '--'+result.boundry+"\n"+
-                'Content-Disposition: form-data; name="'+p+'"'+"\n"+
-                "\n"+
-                obj[p]+"\n"
-            );
-        }
+      if (obj.hasOwnProperty(p)) {
+        lines.push(
+          '--'+result.boundry+"\n"+
+            'Content-Disposition: form-data; name="'+p+'"'+"\n"+
+            "\n"+
+            obj[p]+"\n"
+        )
+      }
     }
-    lines.push( '--'+result.boundry+'--' );
-    result.body = lines.join('');
-    result.length = result.body.length;
-    result.type = 'multipart/form-data; boundary='+result.boundry;
-    return result;
+    lines.push( '--'+result.boundry+'--' )
+    result.body = lines.join('')
+    result.length = result.body.length
+    result.type = 'multipart/form-data; boundary='+result.boundry
+    return result
   }
-  
+
   if(options.form){
-    if(typeof options.form == 'string') throw('form name unsupported');
+    if(typeof options.form == 'string') throw('form name unsupported')
     if(options.method === 'POST'){
-        var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
-        options.headers['content-type'] = encoding;
-        switch(encoding){
-            case 'application/x-www-form-urlencoded':
-                options.body = serialize(options.form).replace(/%20/g, "+");
-                break;
-            case 'multipart/form-data':
-                var multi = multipart(options.form);
-                //options.headers['content-length'] = multi.length;
-                options.body = multi.body;
-                options.headers['content-type'] = multi.type;
-                break;
-            default : throw new Error('unsupported encoding:'+encoding);
-        }
+      var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase()
+      options.headers['content-type'] = encoding
+      switch(encoding){
+        case 'application/x-www-form-urlencoded':
+          options.body = serialize(options.form).replace(/%20/g, "+")
+          break
+        case 'multipart/form-data':
+          var multi = multipart(options.form)
+          //options.headers['content-length'] = multi.length;
+          options.body = multi.body
+          options.headers['content-type'] = multi.type
+          break
+        default : throw new Error('unsupported encoding:'+encoding)
+      }
     }
   }
   //END FORM Hack
@@ -157,7 +158,7 @@ function request(options, callback) {
 
   // HTTP basic authentication
   if(!options.headers.authorization && options.auth)
-    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
+    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password)
 
   return run_xhr(options)
 }
@@ -269,6 +270,7 @@ function run_xhr(options) {
     request.log.debug('Request done', {'id':xhr.id})
 
     xhr.body = xhr.responseText
+    xhr.headers = httpHeaders(xhr.getAllResponseHeaders())
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
       catch (er) { return options.callback(er, xhr)        }
@@ -279,8 +281,8 @@ function run_xhr(options) {
 
 } // request
 
-request.withCredentials = false;
-request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
+request.withCredentials = false
+request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT
 
 //
 // defaults
@@ -290,9 +292,9 @@ request.defaults = function(options, requester) {
   var def = function (method) {
     var d = function (params, callback) {
       if(typeof params === 'string')
-        params = {'uri': params};
+        params = {'uri': params}
       else {
-        params = JSON.parse(JSON.stringify(params));
+        params = JSON.parse(JSON.stringify(params))
       }
       for (var i in options) {
         if (params[i] === undefined) params[i] = options[i]
@@ -313,21 +315,21 @@ request.defaults = function(options, requester) {
 // HTTP method shortcuts
 //
 
-var shortcuts = [ 'get', 'put', 'post', 'head' ];
+var shortcuts = [ 'get', 'put', 'post', 'head' ]
 shortcuts.forEach(function(shortcut) {
-  var method = shortcut.toUpperCase();
-  var func   = shortcut.toLowerCase();
+  var method = shortcut.toUpperCase()
+  var func   = shortcut.toLowerCase()
 
   request[func] = function(opts) {
     if(typeof opts === 'string')
-      opts = {'method':method, 'uri':opts};
+      opts = {'method':method, 'uri':opts}
     else {
-      opts = JSON.parse(JSON.stringify(opts));
-      opts.method = method;
+      opts = JSON.parse(JSON.stringify(opts))
+      opts.method = method
     }
 
-    var args = [opts].concat(Array.prototype.slice.apply(arguments, [1]));
-    return request.apply(this, args);
+    var args = [opts].concat(Array.prototype.slice.apply(arguments, [1]))
+    return request.apply(this, args)
   }
 })
 
@@ -359,10 +361,10 @@ request.couch = function(options, callback) {
       er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
       for (var key in body)
         er[key] = body[key]
-      return callback(er, resp, body);
+      return callback(er, resp, body)
     }
 
-    return callback(er, resp, body);
+    return callback(er, resp, body)
   }
 }
 
@@ -403,15 +405,15 @@ function formatted(obj, method) {
 function is_crossDomain(url) {
   var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
 
-  // jQuery #8138, IE may throw an exception when accessing
-  // a field from window.location if document.domain has been set
-  var ajaxLocation
+    // jQuery #8138, IE may throw an exception when accessing
+    // a field from window.location if document.domain has been set
+    var ajaxLocation
   try { ajaxLocation = location.href }
   catch (e) {
     // Use the href attribute of an A element since IE will modify it given document.location
-    ajaxLocation = document.createElement( "a" );
-    ajaxLocation.href = "";
-    ajaxLocation = ajaxLocation.href;
+    ajaxLocation = document.createElement( "a" )
+    ajaxLocation.href = ""
+    ajaxLocation = ajaxLocation.href
   }
 
   var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
@@ -419,10 +421,10 @@ function is_crossDomain(url) {
 
   var result = !!(
     parts &&
-    (  parts[1] != ajaxLocParts[1]
-    || parts[2] != ajaxLocParts[2]
-    || (parts[3] || (parts[1] === "http:" ? 80 : 443)) != (ajaxLocParts[3] || (ajaxLocParts[1] === "http:" ? 80 : 443))
-    )
+      (  parts[1] != ajaxLocParts[1]
+        || parts[2] != ajaxLocParts[2]
+          || (parts[3] || (parts[1] === "http:" ? 80 : 443)) != (ajaxLocParts[3] || (ajaxLocParts[1] === "http:" ? 80 : 443))
+      )
   )
 
   //console.debug('is_crossDomain('+url+') -> ' + result)
@@ -431,44 +433,44 @@ function is_crossDomain(url) {
 
 // MIT License from http://phpjs.org/functions/base64_encode:358
 function b64_enc (data) {
-    // Encodes string using MIME base64 algorithm
-    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc="", tmp_arr = [];
+  // Encodes string using MIME base64 algorithm
+  var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc="", tmp_arr = []
 
-    if (!data) {
-        return data;
-    }
+  if (!data) {
+    return data
+  }
 
-    // assume utf8 data
-    // data = this.utf8_encode(data+'');
+  // assume utf8 data
+  // data = this.utf8_encode(data+'');
 
-    do { // pack three octets into four hexets
-        o1 = data.charCodeAt(i++);
-        o2 = data.charCodeAt(i++);
-        o3 = data.charCodeAt(i++);
+  do { // pack three octets into four hexets
+    o1 = data.charCodeAt(i++)
+    o2 = data.charCodeAt(i++)
+    o3 = data.charCodeAt(i++)
 
-        bits = o1<<16 | o2<<8 | o3;
+    bits = o1<<16 | o2<<8 | o3
 
-        h1 = bits>>18 & 0x3f;
-        h2 = bits>>12 & 0x3f;
-        h3 = bits>>6 & 0x3f;
-        h4 = bits & 0x3f;
+    h1 = bits>>18 & 0x3f
+    h2 = bits>>12 & 0x3f
+    h3 = bits>>6 & 0x3f
+    h4 = bits & 0x3f
 
-        // use hexets to index into b64, and append result to encoded string
-        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-    } while (i < data.length);
+    // use hexets to index into b64, and append result to encoded string
+    tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4)
+  } while (i < data.length)
 
-    enc = tmp_arr.join('');
+  enc = tmp_arr.join('')
 
-    switch (data.length % 3) {
-        case 1:
-            enc = enc.slice(0, -2) + '==';
-        break;
-        case 2:
-            enc = enc.slice(0, -1) + '=';
-        break;
-    }
+  switch (data.length % 3) {
+    case 1:
+      enc = enc.slice(0, -2) + '=='
+      break
+    case 2:
+      enc = enc.slice(0, -1) + '='
+      break
+  }
 
-    return enc;
+  return enc
 }
-module.exports = request;
+module.exports = request

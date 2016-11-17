@@ -21,9 +21,9 @@
     "test": "beefy test.js"
   },
   "devDependencies": {
-    "tape": "~1.0.4",
     "beefy": "~0.4.0",
-    "browserify": "~2.25.0"
+    "browserify": "~2.25.0",
+    "tape": "~1.0.4"
   },
   "engines": [
     "node"
@@ -41,5 +41,8 @@
       "iphone/6",
       "ipad/6"
     ]
+  },
+  "dependencies": {
+    "http-headers": "^3.0.1"
   }
 }
