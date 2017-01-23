@@ -78,7 +78,7 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
   var serialize = function(obj) {
     var str = [];
@@ -88,7 +88,7 @@ function request(options, callback) {
       }
     return str.join("&");
   }
-  
+
   if(options.qs){
     var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
     if(options.uri.indexOf('?') !== -1){ //no get params
@@ -98,7 +98,7 @@ function request(options, callback) {
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
@@ -121,7 +121,7 @@ function request(options, callback) {
     result.type = 'multipart/form-data; boundary='+result.boundry;
     return result;
   }
-  
+
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
     if(options.method === 'POST'){
@@ -271,7 +271,13 @@ function run_xhr(options) {
     xhr.body = xhr.responseText
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
-      catch (er) { return options.callback(er, xhr)        }
+      catch (er) {
+        if (xhr.statusCode !== 204) {
+          return options.callback(er, xhr)
+        } else {
+          xhr.body = {}
+        }
+      }
     }
 
     options.callback(null, xhr, xhr.body)
