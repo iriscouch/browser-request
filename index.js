@@ -124,7 +124,7 @@ function request(options, callback) {
   
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
-    if(options.method === 'POST'){
+    if(options.method.toLowerCase() === 'post' || options.method.toLowerCase() === 'put'){
         var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
         options.headers['content-type'] = encoding;
         switch(encoding){
