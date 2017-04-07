@@ -78,7 +78,7 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
   var serialize = function(obj) {
     var str = [];
@@ -88,7 +88,7 @@ function request(options, callback) {
       }
     return str.join("&");
   }
-  
+
   if(options.qs){
     var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
     if(options.uri.indexOf('?') !== -1){ //no get params
@@ -98,7 +98,7 @@ function request(options, callback) {
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
@@ -121,7 +121,7 @@ function request(options, callback) {
     result.type = 'multipart/form-data; boundary='+result.boundry;
     return result;
   }
-  
+
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
     if(options.method === 'POST'){
@@ -305,6 +305,8 @@ request.defaults = function(options, requester) {
   de.get = def(request.get)
   de.post = def(request.post)
   de.put = def(request.put)
+  de.patch = def(request.patch)
+  de.delete = def(request.delete)
   de.head = def(request.head)
   return de
 }
@@ -313,7 +315,7 @@ request.defaults = function(options, requester) {
 // HTTP method shortcuts
 //
 
-var shortcuts = [ 'get', 'put', 'post', 'head' ];
+var shortcuts = [ 'get', 'put', 'patch', 'post', 'delete', 'head'];
 shortcuts.forEach(function(shortcut) {
   var method = shortcut.toUpperCase();
   var func   = shortcut.toLowerCase();
@@ -403,16 +405,7 @@ function formatted(obj, method) {
 function is_crossDomain(url) {
   var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
 
-  // jQuery #8138, IE may throw an exception when accessing
-  // a field from window.location if document.domain has been set
-  var ajaxLocation
-  try { ajaxLocation = location.href }
-  catch (e) {
-    // Use the href attribute of an A element since IE will modify it given document.location
-    ajaxLocation = document.createElement( "a" );
-    ajaxLocation.href = "";
-    ajaxLocation = ajaxLocation.href;
-  }
+  var ajaxLocation = location.href;
 
   var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
     , parts = rurl.exec(url.toLowerCase() )
