@@ -405,16 +405,7 @@ function formatted(obj, method) {
 function is_crossDomain(url) {
   var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
 
-  // jQuery #8138, IE may throw an exception when accessing
-  // a field from window.location if document.domain has been set
-  var ajaxLocation
-  try { ajaxLocation = location.href }
-  catch (e) {
-    // Use the href attribute of an A element since IE will modify it given document.location
-    ajaxLocation = document.createElement( "a" );
-    ajaxLocation.href = "";
-    ajaxLocation = ajaxLocation.href;
-  }
+  var ajaxLocation = location.href;
 
   var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
     , parts = rurl.exec(url.toLowerCase() )
